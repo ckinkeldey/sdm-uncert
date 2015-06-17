@@ -1,0 +1,1 @@
+{"type":"Topology","objects":{"test":{"type":"GeometryCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::53004"}},"geometries":[{"type":"LineString","arcs":[0]}]}},"arcs":[[[0,6048],[3557,3951],[3380,-9999],[3062,3871]]],"transform":{"scale":[0.02531493992722895,0.005555845222967063],"translate":[-159.26656987638015,-0.54128031834788]}}
