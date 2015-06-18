@@ -22,6 +22,10 @@ var path = d3.geo.path().projection(projection);
 var svg = d3.select("body").append("div").append("svg").attr("width", width).attr("height", height);
 
 var rasterlayer = svg.append("g").attr("id", "map");
+var selectionlayer = svg.append("g").attr("id", "selection");
+var roadlayer = svg.append("g").attr("id", "roads");
+var pointlayer = svg.append("g")
+	.attr("id", "points");
 
 rasterlayer.append("image")
 	.attr("width", width + "px")
@@ -29,8 +33,8 @@ rasterlayer.append("image")
 	.attr("x", rasterX + "px")
 	.attr("y", rasterY + "px")
 	.attr("xlink:href", backgroundPath);
-var selectionlayer = svg.append("g").attr("id", "selection");
-var maplayer = svg.append("g").attr("id", "roads");
+
+var roads, selection, points;
 
 d3.json("data/roads.topojson", function(error, vectordata) {
 	if (error)
@@ -53,12 +57,12 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 	var roaddata = topojson.feature(vectordata, vectordata.objects.roads).features;
 		
 	// layer for selections
-	var selection = selectionlayer.selectAll("path")
+	selection = selectionlayer.selectAll("path")
 		.data(roaddata)
 		.enter()
 		.append("path")
 		.attr("d", path)
-		.attr("id", function(d) {return "select"+d.properties.id;})
+		.attr("id", function(d) {return "road" + d.properties.id + "_select";})
 		.attr("canclick", false)
 		.attr("active", false)
 		.style("stroke", "yellow")
@@ -66,18 +70,18 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		.style("opacity", ROAD_INACTIVE);
 		
 	// layer for the colored roads
-	var roads = maplayer.selectAll("path")
+	roads = roadlayer.selectAll("path")
 		.data(roaddata)
 		.enter()
 		.append("path")
 		.attr("d", path)
-		.attr("id", function(d) {return d.properties.id;})
+		.attr("id", function(d) {return "road" + d.properties.id;})
 		.each(setColor);
 	
 	roads.on("mousedown", function() {
 		var self = d3.select(this);
 		var id = self.attr("id");
-		var selected = d3.select("#select"+id);
+		var selected = d3.select("#" + id +"_select");
 		var active = (selected.attr("active") == "true") ? false : true;
 		console.log("active = " + selected.attr("active"));
 		console.log("new active = " + active);
@@ -90,7 +94,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 	roads.on("mouseover", function() {
 		var self = d3.select(this);
 		var id = self.attr("id");
-		var selected = d3.select("#select"+id);
+		var selected = d3.select("#" + id+"_select");
 		if (selected.style("opacity") == ROAD_INACTIVE) {
 			selected.style("opacity", ROAD_SELECTABLE);
 		}
@@ -99,10 +103,29 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 	roads.on("mouseout", function() {
 		var self = d3.select(this);
 		var id = self.attr("id");
-		var selected = d3.select("#select"+id);
+		var selected = d3.select("#" + id+"_select");
 		if (selected.style("opacity") == ROAD_SELECTABLE) {
 			selected.style("opacity", ROAD_INACTIVE);
 		}
 	});	
 });
+
+d3.json("data/AB.topojson", function(error, pointdata) {
+	if (error)
+		throw error;
+
+	var abdata = topojson.feature(pointdata, pointdata.objects.AB).features;
+		
+	// layer for points A, B
+	points = pointlayer.selectAll("path")
+		.data(abdata)
+		.enter()
+		.append("path")
+		.attr("d", path)
+		.style("stroke", "red")
+		.append("text")
+	;
+	console.log(d3.select("#road1").node());
+	console.log(d3.select("#road1").node().getPointAtLength(0));
+});		
 
