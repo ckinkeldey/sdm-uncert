@@ -21,11 +21,16 @@ var path = d3.geo.path().projection(projection);
 
 var svg = d3.select("body").append("div").append("svg").attr("width", width).attr("height", height);
 
-var rasterlayer = svg.append("g");
+var rasterlayer = svg.append("g").attr("id", "map");
 
-rasterlayer.append("image").attr("width", width + "px").attr("height", height + "px").attr("x", rasterX + "px").attr("y", rasterY + "px").attr("xlink:href", backgroundPath);
-
-var vectorlayer = svg.append("g");
+rasterlayer.append("image")
+	.attr("width", width + "px")
+	.attr("height", height + "px")
+	.attr("x", rasterX + "px")
+	.attr("y", rasterY + "px")
+	.attr("xlink:href", backgroundPath);
+var selectionlayer = svg.append("g").attr("id", "selection");
+var maplayer = svg.append("g").attr("id", "roads");
 
 d3.json("data/roads.topojson", function(error, vectordata) {
 	if (error)
@@ -34,54 +39,70 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 	var ROAD_ACTIVE = 1;
 	var ROAD_SELECTABLE = 0.5;
 	var ROAD_INACTIVE = 0;
+	
+	var color = d3.scale.ordinal()
+		.domain([4,3,2,1])
+		.range(["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"]);
 
+	function setColor() {
+		d3.select(this).style('stroke', function(d) {
+			return color(d.properties.risk);
+			});
+	}
+	
 	var roaddata = topojson.feature(vectordata, vectordata.objects.roads).features;
-	var i = 0;
-	var road = vectorlayer.selectAll("path")
-		.data(roaddata).enter()
+		
+	// layer for selections
+	var selection = selectionlayer.selectAll("path")
+		.data(roaddata)
+		.enter()
 		.append("path")
 		.attr("d", path)
-		.attr("id", function() {return i++;	})
+		.attr("id", function(d) {return "select"+d.properties.id;})
 		.attr("canclick", false)
 		.attr("active", false)
+		.style("stroke", "yellow")
+		.style("stroke-width", 20)
 		.style("opacity", ROAD_INACTIVE);
-
-	road.on("mousedown", function() {
-		var self = d3.select(this);
-		console.log("id = " + self.attr("id"));
-		// if (self.attr("canclick") == "false") {return;}
 		
-		var active = (self.attr("active") == "true") ? false : true;
-		console.log("active = " + self.attr("active"));
+	// layer for the colored roads
+	var roads = maplayer.selectAll("path")
+		.data(roaddata)
+		.enter()
+		.append("path")
+		.attr("d", path)
+		.attr("id", function(d) {return d.properties.id;})
+		.each(setColor);
+	
+	roads.on("mousedown", function() {
+		var self = d3.select(this);
+		var id = self.attr("id");
+		var selected = d3.select("#select"+id);
+		var active = (selected.attr("active") == "true") ? false : true;
+		console.log("active = " + selected.attr("active"));
 		console.log("new active = " + active);
 		newOpacity = active ? ROAD_ACTIVE : ROAD_INACTIVE;
 		console.log("new opacity = " + newOpacity);
-		self.style("opacity", newOpacity);
-		self.attr("active", active);
+		selected.style("opacity", newOpacity);
+		selected.attr("active", active);
 	});
 	
-	road.on("mouseover", function() {
+	roads.on("mouseover", function() {
 		var self = d3.select(this);
-		if (self.style("opacity") == ROAD_INACTIVE) {
-			self.style("opacity", ROAD_SELECTABLE);
+		var id = self.attr("id");
+		var selected = d3.select("#select"+id);
+		if (selected.style("opacity") == ROAD_INACTIVE) {
+			selected.style("opacity", ROAD_SELECTABLE);
 		}
 	});	
 	
-	road.on("mouseout", function() {
+	roads.on("mouseout", function() {
 		var self = d3.select(this);
-		if (self.style("opacity") == ROAD_SELECTABLE) {
-			self.style("opacity", ROAD_INACTIVE);
+		var id = self.attr("id");
+		var selected = d3.select("#select"+id);
+		if (selected.style("opacity") == ROAD_SELECTABLE) {
+			selected.style("opacity", ROAD_INACTIVE);
 		}
 	});	
 });
-
-/*vectorlayer.
- on("click", function() {
- var active   = vectorlayer.active ? false : true,
- newOpacity = active ? 0.5 : 1;
- vectorlayer.style("opacity", newOpacity);
- vectorlayer.active = active;
- //console.log({"x": d3.event.x, "y": d3.event.y});
- });
- */
 
