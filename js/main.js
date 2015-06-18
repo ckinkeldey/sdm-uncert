@@ -3,6 +3,11 @@ var height = 499;
 
 var backgroundPath = "./data/map.png";
 
+var eps = 10;
+
+// point at end of selected route
+var currentEnd;
+
 var rasterX = 0,
     rasterY = 0, // Offset (px) for positioning raster in 	<div>
     // imgWidth = 873, // <image> dimensions (don't change these)
@@ -95,7 +100,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id+"_select");
-		if (selected.style("opacity") == ROAD_INACTIVE) {
+		if (isValid(selected) && selected.style("opacity") == ROAD_INACTIVE) {
 			selected.style("opacity", ROAD_SELECTABLE);
 		}
 	});	
@@ -116,16 +121,34 @@ d3.json("data/AB.topojson", function(error, pointdata) {
 
 	var abdata = topojson.feature(pointdata, pointdata.objects.AB).features;
 		
-	// layer for points A, B
+	// points A, B
 	points = pointlayer.selectAll("path")
 		.data(abdata)
 		.enter()
 		.append("path")
 		.attr("d", path)
+		.attr("id", function(d) {return "p" + d.properties.id;})
 		.style("stroke", "red")
 		.append("text")
 	;
-	console.log(d3.select("#road1").node());
-	console.log(d3.select("#road1").node().getPointAtLength(0));
-});		
+	
+	var pointA = d3.select("#p0").node().getPointAtLength(0);
+	currentEnd = new toxi.geom.Vec2D(pointA.x, pointA.y);
+	console.log("current end: " + currentEnd);
+});
+
+function isValid(path) {
+	var start = path.node().getPointAtLength(0);
+	var stop = path.node().getPointAtLength(path.node().getTotalLength());
+	var p0 = new toxi.geom.Vec2D(start.x, start.y);
+	var p1 = new toxi.geom.Vec2D(stop.x, stop.y);
+		if (p0.distanceTo(currentEnd) < eps) {
+			currentEnd = p1;
+			return true;
+		} else if (p1.distanceTo(currentEnd) < eps) {
+			currentEnd = p0;
+			return true;
+		}
+	return false;
+}
 
