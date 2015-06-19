@@ -1,6 +1,10 @@
 var width = 873;
 var height = 499;
 
+var ROAD_ACTIVE = 1;
+var ROAD_SELECTABLE = 0.5;
+var ROAD_INACTIVE = 0;
+	
 var backgroundPath = "./data/map.png";
 
 var eps = 10;
@@ -46,10 +50,6 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 	if (error)
 		throw error;
 
-	var ROAD_ACTIVE = 1;
-	var ROAD_SELECTABLE = 0.5;
-	var ROAD_INACTIVE = 0;
-	
 	var color = d3.scale.ordinal()
 		.domain([4,3,2,1])
 		.range(["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"]);
@@ -172,5 +172,19 @@ function isValid(path) {
 	var p0 = new toxi.geom.Vec2D(start.x, start.y);
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
 	return p0.distanceTo(currentEnd) < eps || p1.distanceTo(currentEnd) < eps;
+}
+
+function deleteRoute() {
+	route = [];
+	var pointA = d3.select("#p0").node().getPointAtLength(0);
+	currentEnd = new toxi.geom.Vec2D(pointA.x, pointA.y);
+	
+	selection = d3.select("#selection").selectAll("*")
+	.each(function(d) {
+		var self = d3.select(this);
+		console.log("active: " + self.attr("active"));
+		self.attr("active", false)
+		.style("opacity", ROAD_INACTIVE);
+	});
 }
 
