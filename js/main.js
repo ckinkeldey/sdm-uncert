@@ -176,6 +176,9 @@ function drawSegment(selected) {
 	if (isRouteComplete(selected)) {
 		selectionlayer.selectAll("path")
 		.style("stroke", "green");
+	} else {
+		selectionlayer.selectAll("path")
+		.style("stroke", ROAD_COLOR);
 	}
 } 
 
