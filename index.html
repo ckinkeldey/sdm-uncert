@@ -8,15 +8,21 @@
 				stroke-width: 10px;
 				stroke-linecap: square;
 			}
+			text {
+				font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
+				text-anchor: middle;
+				pointer-events: none;
+				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+			}
 		</style>
 	</head>
 	<body>
-		<h3>Please choose a route and press "submit"</h3>
+		<h3>Please draw a route from A to B and press "submit"</h3>
 		<script src="lib/d3.js"></script>
 		<script src="lib/topojson.js"></script>
 		<script src="lib/toxiclibs.js"></script>
 		<script src="js/main.js"></script>
-		
+
 		<input id="clickMe" type="button" value="Delete" onclick="deleteRoute();" />
 		<!-- <div><button type="button">Submit</button> </div> -->
 	</body>
