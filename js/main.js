@@ -2,6 +2,7 @@ var width = 873;
 var height = 499;
 
 var ROAD_COLOR = "yellow";
+var ROAD_COLOR_COMPLETE = "green";
 	
 var ROAD_OPACITY_ACTIVE = 1;
 var ROAD_OPACITY_SELECTABLE = 0.5;
@@ -11,6 +12,8 @@ var backgroundPath = "./data/map.png";
 
 var eps = 10;
 var route = [];
+var routeLength = 0;
+
 // point at end of selected route
 var currentEnd;
 
@@ -106,6 +109,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		if (isValid(selected) && isSimple(selected)) {
 			selected.style("opacity", ROAD_OPACITY_SELECTABLE);
 		}
+		console.log("part of route: " + isPartOfRoute(selected));
 	});	
 	
 	roads.on("mouseout", function() {
@@ -167,16 +171,22 @@ function drawSegment(selected) {
 	selected.style("opacity", newOpacity);
 	selected.attr("active", active);
 	// add or remove selected part to/from the route
+	var segLength = parseFloat(selected.attr("length"));
 	if (active == true) {
 		 route.push(currentEnd);
+		 routeLength += segLength;
 	} else {
 		route.pop();
+		routeLength -= segLength;
 	}
 	console.log("current route: " + route);
+	console.log("current route length: " + routeLength);
 	updateEndPoint(selected);
+	
+	// color route if complete
 	if (isRouteComplete(selected)) {
 		selectionlayer.selectAll("path")
-		.style("stroke", "green");
+		.style("stroke", ROAD_COLOR_COMPLETE);
 	} else {
 		selectionlayer.selectAll("path")
 		.style("stroke", ROAD_COLOR);
@@ -188,9 +198,9 @@ function updateEndPoint(segment) {
 	var end = segment.node().getPointAtLength(segment.node().getTotalLength());
 	var p0 = new toxi.geom.Vec2D(start.x, start.y);
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
-	if (p0.distanceTo(currentEnd) < eps) {
+	if (isIdentical(p0, currentEnd)) {
 		currentEnd = p1;
-	} else if (p1.distanceTo(currentEnd) < eps) {
+	} else if (isIdentical(p1, currentEnd)) {
 		currentEnd = p0;
 	}
 }
@@ -201,12 +211,32 @@ function isRouteComplete(segment) {
 	return b.distanceTo(currentEnd) < eps;
 }
 
+function isIdentical(p0, p1) {
+	return p0.distanceTo(p1) < eps;
+}
+
+function isPartOfRoute(path) {
+	var start = path.node().getPointAtLength(0);
+	var end = path.node().getPointAtLength(path.node().getTotalLength());
+	var p0 = new toxi.geom.Vec2D(start.x, start.y);
+	var p1 = new toxi.geom.Vec2D(end.x, end.y);
+	for (var i = 0; i < route.length-1; i++) {
+		if (
+			(isIdentical(route[i],p0) && isIdentical(route[i+1],p1)) 
+		|| (isIdentical(route[i],p1) && isIdentical(route[i+1],p0))
+		) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function isValid(path) {
 	var start = path.node().getPointAtLength(0);
 	var end = path.node().getPointAtLength(path.node().getTotalLength());
 	var p0 = new toxi.geom.Vec2D(start.x, start.y);
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
-	return p0.distanceTo(currentEnd) < eps || p1.distanceTo(currentEnd) < eps;
+	return isIdentical(p0,currentEnd) || isIdentical(p1,currentEnd);
 }
 
 function isSimple(path) {
@@ -215,13 +245,12 @@ function isSimple(path) {
 	var p0 = new toxi.geom.Vec2D(start.x, start.y);
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
 	for (var i = 0; i < route.length; i++) {
-		if (route[i].distanceTo(p0) < eps|| route[i].distanceTo(p1) < eps) {
+		if (isIdentical(route[i],p0) || isIdentical(route[i],p1)) {
 			return false;
 		}
 	}
 	return true;
 }
-
 
 function deleteRoute() {
 	route = [];
@@ -237,8 +266,3 @@ function deleteRoute() {
 		;
 	});
 }
-
-function computeRouteLength() {
-	
-}
-
