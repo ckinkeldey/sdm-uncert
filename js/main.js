@@ -187,9 +187,11 @@ function drawSegment(selected) {
 	if (isRouteComplete(selected)) {
 		selectionlayer.selectAll("path")
 		.style("stroke", ROAD_COLOR_COMPLETE);
+		d3.select("#submitButton").attr("disabled", null);
 	} else {
 		selectionlayer.selectAll("path")
 		.style("stroke", ROAD_COLOR);
+		d3.select("#submitButton").attr("disabled", "disabled");
 	}
 } 
 
@@ -208,7 +210,7 @@ function updateEndPoint(segment) {
 function isRouteComplete(segment) {
 	var pointB = d3.select("#p1").node().getPointAtLength(0);
 	var b = new toxi.geom.Vec2D(pointB.x, pointB.y);
-	return b.distanceTo(currentEnd) < eps;
+	return isIdentical(b,currentEnd);
 }
 
 function isIdentical(p0, p1) {
@@ -244,8 +246,9 @@ function isSimple(path) {
 	var end = path.node().getPointAtLength(path.node().getTotalLength());
 	var p0 = new toxi.geom.Vec2D(start.x, start.y);
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
-	for (var i = 0; i < route.length; i++) {
-		if (isIdentical(route[i],p0) || isIdentical(route[i],p1)) {
+	for (var i = 0; i < route.length-2; i++) {
+		if ((isIdentical(route[i],p0) || isIdentical(route[i],p1))
+			) {
 			return false;
 		}
 	}
@@ -265,4 +268,5 @@ function deleteRoute() {
 		.style("opacity", ROAD_OPACITY_INACTIVE)
 		;
 	});
+	d3.select("#submitButton").attr("disabled", "disbaled");	
 }
