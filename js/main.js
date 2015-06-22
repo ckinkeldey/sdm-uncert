@@ -90,7 +90,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_select");
-		if (isValid(selected)) {
+		if (isValid(selected) && isSimple(selected)) {
 			drawSegment(selected);
 		}
 	});
@@ -103,7 +103,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_select");
-		if (isValid(selected)) {
+		if (isValid(selected) && isSimple(selected)) {
 			selected.style("opacity", ROAD_OPACITY_SELECTABLE);
 		}
 	});	
@@ -168,10 +168,11 @@ function drawSegment(selected) {
 	selected.attr("active", active);
 	// add or remove selected part to/from the route
 	if (active == true) {
-		 route.push(selected);
+		 route.push(currentEnd);
 	} else {
 		route.pop();
 	}
+	console.log("current route: " + route);
 	updateEndPoint(selected);
 	if (isRouteComplete(selected)) {
 		selectionlayer.selectAll("path")
@@ -207,6 +208,20 @@ function isValid(path) {
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
 	return p0.distanceTo(currentEnd) < eps || p1.distanceTo(currentEnd) < eps;
 }
+
+function isSimple(path) {
+	var start = path.node().getPointAtLength(0);
+	var end = path.node().getPointAtLength(path.node().getTotalLength());
+	var p0 = new toxi.geom.Vec2D(start.x, start.y);
+	var p1 = new toxi.geom.Vec2D(end.x, end.y);
+	for (var i = 0; i < route.length; i++) {
+		if (route[i].distanceTo(p0) < eps|| route[i].distanceTo(p1) < eps) {
+			return false;
+		}
+	}
+	return true;
+}
+
 
 function deleteRoute() {
 	route = [];
