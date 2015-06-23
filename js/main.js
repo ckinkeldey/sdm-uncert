@@ -208,8 +208,9 @@ function drawSegment(selected) {
 		route.pop();
 		routeLength -= segLength;
 	}
-	console.log("current route: " + route);
-	console.log("current route length: " + routeLength);
+	// console.log("current route: " + route);
+	// console.log("current route length: " + routeLength);
+	d3.select("#lengthTextfield").html("Route length: " + Math.round(routeLength) + " m");
 	updateEndPoint(selected);
 	
 	// color route if complete
@@ -299,3 +300,8 @@ function deleteRoute() {
 	});
 	d3.select("#submitButton").attr("disabled", "disabled");	
 }
+
+function submitRoute() {
+	console.log("final route length: " + routeLength);
+}
+
