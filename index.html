@@ -14,6 +14,9 @@
 				pointer-events: none;
 				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 			}
+			div {
+				float:left;
+			}
 		</style>
 	</head>
 	<body>
@@ -26,11 +29,14 @@
 		<script src="lib/toxiclibs.js"></script>
 		<script src="js/constants.js"></script>
 		<script src="js/main.js"></script>
-		<div style="width:873px;">
+		<div id="legend" style="float:left; margin-left: 50px;">
+			<img src="data/legend.png" width="100px">
+		</div>
+		<div id="buttons" style="clear:both;">
 			<input id="deleteButton" type="button" value="Delete route" onclick="deleteRoute();" />
 			<input id="submitButton" type="button" value="Submit" disabled onclick="submitRoute()" style="float: right;"/>
 		</div>
-		<div>
+		<div style="clear:both;">
 			<p id="lengthTextfield">
 				Route length: 0 m
 			</p>

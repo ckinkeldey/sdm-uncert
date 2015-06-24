@@ -7,6 +7,8 @@ var eps = 10;
 var route = [];
 var routeLength = 0;
 
+var leftMB = false;
+
 // point at end of selected route
 var currentEnd;
 
@@ -57,8 +59,9 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 			});
 	}
 	
-	function changeColor(roads) {
-		roads.style("stroke", function(d) {
+	function changeBlocked(roads) {
+		roads//.style("stroke", "red")
+			.style("stroke", function(d) {
 			var risk = d.properties.risk;
 			return Math.random() < 1/risk ? "red" : "white";
 			});
@@ -101,7 +104,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		.style("stroke-linecap", "butt")
 		.style("stroke", function() {return Math.random() <=0.5 ? "red" : "white";})
 		;
-		setInterval(function() {changeColor(roads);}, 1000);
+		setInterval(function() {changeBlocked(roads);}, 1000);
 	}
 	
 	
@@ -123,12 +126,17 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_highlight");
 		if (isValid(selected) && isSimple(selected)) {
-			selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
+			// if (leftMB == true) {
+				// drawSegment(selected);
+			// } else {
+				selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
+			// }
 		}
 		// console.log("part of route: " + isPartOfRoute(selected));
 	});	
 	
 	selection.on("mousedown", function() {
+		leftMB = true;
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_highlight");
@@ -298,7 +306,9 @@ function deleteRoute() {
 		.style("opacity", ROUTE_OPACITY_INACTIVE)
 		;
 	});
-	d3.select("#submitButton").attr("disabled", "disabled");	
+	routeLength = 0;
+	d3.select("#submitButton").attr("disabled", "disabled");
+	d3.select("#lengthTextfield").html("Route length: 0 m");
 }
 
 function submitRoute() {
