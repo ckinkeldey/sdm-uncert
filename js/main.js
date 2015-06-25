@@ -54,18 +54,43 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		.range(["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"]);
 
 	function setColor() {
-		d3.select(this).style('stroke', function(d) {
+		d3.select(this)
+		.style('stroke', function(d) {
 			return color(d.properties.risk);
-			});
+		});
 	}
 	
 	function changeBlocked(roads) {
-		roads//.style("stroke", "red")
+		roads
 			.style("stroke", function(d) {
 			var risk = d.properties.risk;
-			return Math.random() < 1/risk ? "red" : "white";
-			});
+			return Math.random() < 1/risk ? "#d7301f" : "#fef0d9";
+		});
 	}
+	
+	function drawSymbol() {
+		var self = d3.select(this);
+		self.attr("risk", function(d) {
+			return d.properties.risk;
+			});
+		var symbolSize = (5-self.attr("risk"))*8;
+		d3.select("g")
+		.append("svg:image")
+		.attr("width", symbolSize)
+		.attr("height", symbolSize)
+		.attr("x", function() {
+			var x0 = self.node().getPointAtLength(0).x;
+			var x1 = self.node().getPointAtLength(self.node().getTotalLength()).x;
+			return (x0+x1-symbolSize)/2;
+		})
+		.attr("y", function() {
+			var y0 = self.node().getPointAtLength(0).y;
+			var y1 = self.node().getPointAtLength(self.node().getTotalLength()).y;
+			return (y0+y1-symbolSize)/2;
+		})
+		.attr("xlink:href", "data/warning.png");
+	}
+	
 	
 	var roaddata = topojson.feature(vectordata, vectordata.objects.roads).features;
 		
@@ -86,25 +111,37 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		
 	// layer for the roads
 	if (visualization == 0) {
-	roads = roadlayer.selectAll("path")
-		.data(roaddata)
-		.enter()
-		.append("path")
-		.attr("d", path)
-		// .attr("id", function(d) {return "road" + d.properties.id;})
-		.style("stroke-linecap", "square")
-		.each(setColor);
+		roads = roadlayer.selectAll("path")
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-linecap", "square")
+			.each(setColor);
+	} else if (visualization == 1) {
+		roads = roadlayer.selectAll("path")
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-linecap", "butt")
+			// .style("stroke", function() {return Math.random() <=0.5 ? "#fef0d9" : "#d7301f";})
+			;
+			setInterval(function() {changeBlocked(roads);}, 1000);
 	} else {
 		roads = roadlayer.selectAll("path")
-		.data(roaddata)
-		.enter()
-		.append("path")
-		.attr("d", path)
-		// .attr("id", function(d) {return "road" + d.properties.id;})
-		.style("stroke-linecap", "butt")
-		.style("stroke", function() {return Math.random() <=0.5 ? "red" : "white";})
-		;
-		setInterval(function() {changeBlocked(roads);}, 1000);
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-linecap", "square")
+			.style("stroke", "grey")
+			.style("opacity", 0)
+			.each(drawSymbol);
+		
 	}
 	
 	
@@ -167,21 +204,28 @@ d3.json("data/AB.topojson", function(error, pointdata) {
 	var abdata = topojson.feature(pointdata, pointdata.objects.AB).features;
 		
 	// points A, B
-	points = pointlayer.selectAll("path")
+	points = pointlayer.selectAll("circle")
 		.data(abdata)
 		.enter()
-		.append("g")
-		.append("path")
-		.attr("d", path)
+		.append("circle")
 		.attr("id", function(d) {return "p" + d.properties.id;})
-		.style("stroke", "blue")
+		.attr("cx", function(d) {
+			console.log(d.geometry);
+			return projection(d.geometry.coordinates)[0];})
+		.attr("cy",  function(d) {return projection(d.geometry.coordinates)[1];})
+		.attr("r", "10px")
+		.style("fill", "green")
+		.style("stroke", "white")
 	;
-	var pointA = d3.select("#p0").node().getPointAtLength(0);
-	var pointB = d3.select("#p1").node().getPointAtLength(0);
-	var xLabelA = pointA.x - 20; 
-	var yLabelA = pointA.y - 20;
-	var xLabelB = pointB.x + 20; 
-	var yLabelB = pointB.y - 20;
+	
+	var pointAx = d3.select("#p0").attr("cx");
+	var pointAy = d3.select("#p0").attr("cy");
+	var pointBx = d3.select("#p1").attr("cx");
+	var pointBy = d3.select("#p1").attr("cy");
+	var xLabelA = pointAx - 20; 
+	var yLabelA = pointAy - 20;
+	var xLabelB = pointBx + 20; 
+	var yLabelB = pointBy - 20;
 	
 	pointlayer.selectAll("labels")
 		.data(abdata)
@@ -189,13 +233,15 @@ d3.json("data/AB.topojson", function(error, pointdata) {
 		.append("svg:text")
 		.attr("x", function (d) {return d.properties.id==0?xLabelA:xLabelB;})
 		.attr("y", function (d) {return d.properties.id==0?yLabelA:yLabelB;})
-		.style("fill", "blue")
+		.style("fill", "green")
+		.style("stroke", "white")
+		// .style("font-weight", "bold")
 		// .style("font-size", "20px")
 		.text(function (d) {return d.properties.id==0?"A":"B";})
 	;
 	
 	// initial state: starting point is current end of route
-	currentEnd = new toxi.geom.Vec2D(pointA.x, pointA.y);
+	currentEnd = new toxi.geom.Vec2D(pointAx, pointAy);
 	// console.log("current end: " + currentEnd);
 });
 
