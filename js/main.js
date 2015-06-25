@@ -2,6 +2,7 @@ var width = 873;
 var height = 499;
 
 var backgroundPath = "./data/map.png";
+var roadfile = "vector_risk_length_transformed";
 
 var eps = 10;
 var route = [];
@@ -33,6 +34,7 @@ var svg = d3.select("body").append("div").append("svg").attr("width", width).att
 var rasterlayer = svg.append("g").attr("id", "map");
 var highlightlayer = svg.append("g").attr("id", "highlight");
 var roadlayer = svg.append("g").attr("id", "roads");
+var roadnodeslayer = svg.append("g").attr("id", "roadnodes");
 var pointlayer = svg.append("g").attr("id", "points");
 var selectionlayer = svg.append("g").attr("id", "selection");
 
@@ -43,9 +45,9 @@ rasterlayer.append("image")
 	.attr("y", rasterY + "px")
 	.attr("xlink:href", backgroundPath);
 
-var roads, highlight, points;
+var roads, roadNodes, highlight, points;
 
-d3.json("data/roads.topojson", function(error, vectordata) {
+d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	if (error)
 		throw error;
 
@@ -58,7 +60,7 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		.style('stroke', function(d) {
 			return color(d.properties.risk);
 		});
-	}
+	}	
 	
 	function changeBlocked(roads) {
 		roads
@@ -91,9 +93,8 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 		.attr("xlink:href", "data/warning.png");
 	}
 	
+	var roaddata = topojson.feature(roaddata, roaddata.objects[roadfile]).features;
 	
-	var roaddata = topojson.feature(vectordata, vectordata.objects.roads).features;
-		
 	// layer for highlighting selections
 	highlight = highlightlayer.selectAll("path")
 		.data(roaddata)
@@ -197,11 +198,32 @@ d3.json("data/roads.topojson", function(error, vectordata) {
 	
 });
 
-d3.json("data/AB.topojson", function(error, pointdata) {
+d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
+	if (error)
+		throw error;
+		
+	var roadnodesdata = topojson.feature(roadnodesdata, roadnodesdata.objects[roadfile+"_points"]).features;
+		
+	// road nodes as layover
+	roadnodes = roadnodeslayer.selectAll("path")
+			.data(roadnodesdata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("fill", "white")
+			.style("stroke", "white")
+			.style("stroke-width", "5px")
+			.style("stroke-linecap", "square")
+			;
+			
+});
+
+d3.json("data/AB1.topojson", function(error, pointdata) {
 	if (error)
 		throw error;
 
-	var abdata = topojson.feature(pointdata, pointdata.objects.AB).features;
+	var abdata = topojson.feature(pointdata, pointdata.objects.AB1).features;
 		
 	// points A, B
 	points = pointlayer.selectAll("circle")
@@ -292,8 +314,9 @@ function updateEndPoint(segment) {
 }
 
 function isRouteComplete(segment) {
-	var pointB = d3.select("#p1").node().getPointAtLength(0);
-	var b = new toxi.geom.Vec2D(pointB.x, pointB.y);
+	var pointBx = d3.select("#p1").attr("cx");
+	var pointBy = d3.select("#p1").attr("cy");
+	var b = new toxi.geom.Vec2D(pointBx, pointBy);
 	return isIdentical(b,currentEnd);
 }
 
@@ -341,8 +364,9 @@ function isSimple(path) {
 
 function deleteRoute() {
 	route = [];
-	var pointA = d3.select("#p0").node().getPointAtLength(0);
-	currentEnd = new toxi.geom.Vec2D(pointA.x, pointA.y);
+	var pointAx = d3.select("#p0").attr("cx");
+	var pointAy = d3.select("#p0").attr("cy");
+	currentEnd = new toxi.geom.Vec2D(pointAx, pointAy);
 	
 	highlight = d3.select("#highlight").selectAll("*")
 	.each(function(d) {
