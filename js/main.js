@@ -8,6 +8,8 @@ var eps = 10;
 var route = [];
 var routeLength = 0;
 
+var risks = [0, 0.125, 0.375, 0.625, 0.875];
+
 var leftMB = false;
 
 // point at end of selected route
@@ -34,9 +36,9 @@ var svg = d3.select("body").append("div").append("svg").attr("width", width).att
 var rasterlayer = svg.append("g").attr("id", "map");
 var highlightlayer = svg.append("g").attr("id", "highlight");
 var roadlayer = svg.append("g").attr("id", "roads");
-var roadnodeslayer = svg.append("g").attr("id", "roadnodes");
 var pointlayer = svg.append("g").attr("id", "points");
 var selectionlayer = svg.append("g").attr("id", "selection");
+var roadnodeslayer = svg.append("g").attr("id", "roadnodes");
 
 rasterlayer.append("image")
 	.attr("width", width + "px")
@@ -54,29 +56,44 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	var color = d3.scale.ordinal()
 		.domain([4,3,2,1])
 		.range(["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"]);
+		
+	var colorGrey = d3.scale.ordinal()
+	.domain([4,3,2,1])
+	.range(["#eee", "#bbb", "#777", "#d333"]);
+	
+	var colorBlue =  d3.scale.ordinal()
+	.domain([4,3,2,1])
+	.range(['rgb(239,243,255)','rgb(189,215,231)','rgb(107,174,214)','rgb(33,113,181)']);
+
 
 	function setColor() {
 		d3.select(this)
 		.style('stroke', function(d) {
-			return color(d.properties.risk);
+			return colorBlue(d.properties.risk);
 		});
 	}	
 	
 	function changeBlocked(roads) {
 		roads
+			.transition()
+			.duration(500)
 			.style("stroke", function(d) {
 			var risk = d.properties.risk;
-			return Math.random() < 1/risk ? "#d7301f" : "#fef0d9";
+			return Math.random() < risks[risk] ? "white" : "#222";
 		});
 	}
 	
 	function drawSymbol() {
 		var self = d3.select(this);
-		self.attr("risk", function(d) {
-			return d.properties.risk;
+		if (visualization == 2) {
+			self.attr("risk", function(d) {
+				return d.properties.risk;
 			});
-		var symbolSize = (5-self.attr("risk"))*8;
-		d3.select("g")
+			symbolSize = Math.sqrt((5-self.attr("risk"))*100);
+		} else {
+			symbolSize = 20;
+		}
+		d3.select("#roads")
 		.append("svg:image")
 		.attr("width", symbolSize)
 		.attr("height", symbolSize)
@@ -90,7 +107,18 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			var y1 = self.node().getPointAtLength(self.node().getTotalLength()).y;
 			return (y0+y1-symbolSize)/2;
 		})
-		.attr("xlink:href", "data/warning.png");
+		.attr("xlink:href", function(d) {
+			return visualization == 2 ? "data/warning.png" : "data/fire_symbol.png";
+		});
+	}
+	
+	function changeSymbol() {
+		d3.selectAll("#symbols")
+			// .transition()
+			.style("opacity", function(d) {
+			var risk = d.properties.risk;
+			return Math.random() < risks[risk] ? "0" : "1";
+		});			
 	}
 	
 	var roaddata = topojson.feature(roaddata, roaddata.objects[roadfile]).features;
@@ -130,8 +158,8 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-linecap", "butt")
 			// .style("stroke", function() {return Math.random() <=0.5 ? "#fef0d9" : "#d7301f";})
 			;
-			setInterval(function() {changeBlocked(roads);}, 1000);
-	} else {
+			setInterval(function() {changeBlocked(roads);}, 500);
+	} else if (visualization == 2){
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -140,11 +168,22 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			// .attr("id", function(d) {return "road" + d.properties.id;})
 			.style("stroke-linecap", "square")
 			.style("stroke", "grey")
-			.style("opacity", 0)
+			.style("opacity", 1)
 			.each(drawSymbol);
-		
+	} else {
+		var symbolSize = 32;
+		roads = roadlayer.selectAll("path")
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			.style("stroke-linecap", "square")
+			.style("stroke", "grey")
+			.style("opacity", 1)
+			.each(drawSymbol)
+			;
+			setInterval(changeSymbol, 500);
 	}
-	
 	
 	// invisible layer for selection events
 	selection = selectionlayer.selectAll("path")
@@ -205,17 +244,25 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 	var roadnodesdata = topojson.feature(roadnodesdata, roadnodesdata.objects[roadfile+"_points"]).features;
 		
 	// road nodes as layover
-	roadnodes = roadnodeslayer.selectAll("path")
+	var roadnodes = roadnodeslayer.selectAll("path")
 			.data(roadnodesdata)
 			.enter()
 			.append("path")
 			.attr("d", path)
-			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.attr("id", function(d) {return "roadnode" + d.properties.id;})
 			.style("fill", "white")
 			.style("stroke", "white")
 			.style("stroke-width", "5px")
 			.style("stroke-linecap", "square")
 			;
+			
+	roadnodes.on("mouseover", function() {
+		var self = d3.select(this);
+		var selected = getSelectedEdge(self, currentEnd);
+		if (selected != null) {
+			selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
+		}
+	});	
 			
 });
 
@@ -231,11 +278,9 @@ d3.json("data/AB1.topojson", function(error, pointdata) {
 		.enter()
 		.append("circle")
 		.attr("id", function(d) {return "p" + d.properties.id;})
-		.attr("cx", function(d) {
-			console.log(d.geometry);
-			return projection(d.geometry.coordinates)[0];})
+		.attr("cx", function(d) {return projection(d.geometry.coordinates)[0];})
 		.attr("cy",  function(d) {return projection(d.geometry.coordinates)[1];})
-		.attr("r", "10px")
+		.attr("r", "12px")
 		.style("fill", "green")
 		.style("stroke", "white")
 	;
@@ -244,17 +289,17 @@ d3.json("data/AB1.topojson", function(error, pointdata) {
 	var pointAy = d3.select("#p0").attr("cy");
 	var pointBx = d3.select("#p1").attr("cx");
 	var pointBy = d3.select("#p1").attr("cy");
-	var xLabelA = pointAx - 20; 
-	var yLabelA = pointAy - 20;
-	var xLabelB = pointBx + 20; 
-	var yLabelB = pointBy - 20;
+	var labelAx = pointAx - 30; 
+	var labelAy = pointAy - 10;
+	var labelBx = pointBx + 20; 
+	var labelBy = pointBy - 20;
 	
 	pointlayer.selectAll("labels")
 		.data(abdata)
 		.enter()
 		.append("svg:text")
-		.attr("x", function (d) {return d.properties.id==0?xLabelA:xLabelB;})
-		.attr("y", function (d) {return d.properties.id==0?yLabelA:yLabelB;})
+		.attr("x", function (d) {return d.properties.id==0?labelAx:labelBx;})
+		.attr("y", function (d) {return d.properties.id==0?labelAy:labelBy;})
 		.style("fill", "green")
 		.style("stroke", "white")
 		// .style("font-weight", "bold")
@@ -338,6 +383,20 @@ function isPartOfRoute(path) {
 		}
 	}
 	return false;
+}
+
+function getSelectedEdge(point0, point1) {
+	var p0 = new toxi.geom.Vec2D(point0.x, point0.y);
+	var p1 = new toxi.geom.Vec2D(point1.x, point1.y);
+	for (var i = 0; i < roads.length; i++) {
+		var start = roads[i].node().getPointAtLength(0);
+		var end = roads[i].node().getPointAtLength(path.node().getTotalLength());
+		if ((start[0] == p0.x && start[1] == p0.y && stop[0] == p1.x && stop[1] == p1.y)
+			|| (start[0] == p1.x && start[1] == p1.y && stop[0] == p0.x && stop[1] == p0.y)) {
+			return roads[i];
+		}
+	}
+	return null;
 }
 
 function isValid(path) {
