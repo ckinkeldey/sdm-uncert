@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>Test sdm.js</title>
+
+		<script type="text/javascript" src="../lib/jsUnitCore.js"></script>
+		<script src="../lib/d3.js"></script>
+		<script src="../lib/topojson.js"></script>
+		<script src="../lib/toxiclibs.js"></script>
+		<script type="text/javascript" src="../js/sdm.js"></script>
+
+	</head>
+	<body>
+		<script type="text/javascript">
+			// var edgeArray = [1];
+			var edges = [1];
+			function setUp() {
+				var points0 = [[1, 0], [20, 30]];
+
+				var lineFunction = d3.svg.line().x(function(d, i) {
+					return d[0];
+				}).y(function(d, i) {
+					return d[1];
+				}).interpolate("linear");
+
+				edges = d3.select("body")
+				.data(points0)
+				.enter()
+				.append("g")
+				.append("path")
+				.attr("d", lineFunction);
+
+				edges1 = [edges];
+			}
+
+			function tearDown() {
+				// anything to cleanup after running a testcase
+			}
+
+			function testGetSelectedEdge() {
+				var p0 = {
+					"x" : 1,
+					"y" : 0
+				};
+				var p1 = {
+					"x" : 20,
+					"y" : 30
+				};
+				assertEquals("", edges[0], getSelectedEdge(edges, p0, p1));
+			}
+
+		</script>
+	</body>
+</html>

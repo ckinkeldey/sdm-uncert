@@ -1,8 +1,15 @@
+var ROUTE_COLOR = "yellow";
+var ROUTE_COLOR_COMPLETE = "green";
+	
+var ROUTE_OPACITY_ACTIVE = 1;
+var ROUTE_OPACITY_SELECTABLE = 0.5;
+var ROUTE_OPACITY_INACTIVE = 0;
+
 var width = 873;
 var height = 499;
 
 var backgroundPath = "./data/map.png";
-var roadfile = "vector_risk_length_transformed";
+var roadfile = "vector_risk_length";
 
 var eps = 10;
 var route = [];
@@ -244,7 +251,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 				selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
 			// }
 		}
-		// console.log("part of route: " + isPartOfRoute(selected));
+		console.log("part of route: " + isPartOfRoute(selected));
 	});	
 	
 	selection.on("mousedown", function() {
@@ -293,10 +300,11 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			
 	roadnodes.on("mouseover", function() {
 		var self = d3.select(this);
-		var selected = getSelectedEdge(self, currentEnd);
-		if (selected != null) {
-			selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
-		}
+		highlightEdge(highlight, self[0][0].getPointAtLength(0), currentEnd);
+		// if (selected) {
+			// var selected1 = d3.select("#road1_highlight");
+			// selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
+		// }
 	});	
 			
 });
@@ -423,19 +431,41 @@ function isPartOfRoute(path) {
 	return false;
 }
 
-function getSelectedEdge(point0, point1) {
+function highlightEdge(edges, point0, point1) {
 	var p0 = new toxi.geom.Vec2D(point0.x, point0.y);
 	var p1 = new toxi.geom.Vec2D(point1.x, point1.y);
-	for (var i = 0; i < roads.length; i++) {
-		var start = roads[i].node().getPointAtLength(0);
-		var end = roads[i].node().getPointAtLength(path.node().getTotalLength());
-		if ((start[0] == p0.x && start[1] == p0.y && stop[0] == p1.x && stop[1] == p1.y)
-			|| (start[0] == p1.x && start[1] == p1.y && stop[0] == p0.x && stop[1] == p0.y)) {
-			return roads[i];
-		}
+	if (isIdentical(p0, p1)) {
+		return null;
 	}
-	return null;
+	edges
+	.each(function(d) {
+		var self = d3.select(this);
+		self.style("opacity", function(d) {
+			return isEdge(p0, p1, d) ? ROUTE_OPACITY_SELECTABLE : ROUTE_OPACITY_INACTIVE;
+		});
+	});
+	// for (var i = 0; i < edges[0].length; i++) {
+		// var start = edges[0][i].getPointAtLength(0);
+		// var end = edges[0][i].getPointAtLength(edges[0][i].getTotalLength());
+		// var startPoint = new toxi.geom.Vec2D(point0.x, point0.y);
+		// var endPoint = new toxi.geom.Vec2D(point1.x, point1.y);
+		// if ((isIdentical(p0, startPoint) && isIdentical(endPoint, p1))
+			// || (isIdentical(p1, startPoint) && isIdentical(endPoint, p0))) {
+			// return edges[0][i];
+		// }
+	// }
+	// return null;
 }
+
+function isEdge(p0, p1, edge) {
+	var start = projection(edge.geometry.coordinates[0]);
+	var end = projection(edge.geometry.coordinates[0]);
+	var startPoint = new toxi.geom.Vec2D(start[0], start[1]);
+	var endPoint = new toxi.geom.Vec2D(end[0], end[1]);
+	return ((isIdentical(p0, startPoint) && isIdentical(endPoint, p1))
+			|| (isIdentical(p1, startPoint) && isIdentical(endPoint, p0))); 
+}
+	
 
 function isValid(path) {
 	var start = path.node().getPointAtLength(0);
@@ -480,8 +510,9 @@ function deleteRoute() {
 }
 
 function submitRoute() {
+	var overalltime = (new Date().getTime() - startTime)/1000;
 	console.log("final route length: " + routeLength);
-	console.log("time: " + (new Date().getTime() - startTime)/1000 + " s");
+	console.log("time: " + overalltime + " s.");
 	console.log("mean risk for route: " + routeRisk / routeLength);
 	var routeline = d3.svg.line()
     .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
@@ -489,6 +520,29 @@ function submitRoute() {
 	console.log("route: " + routeline(route));
 	var json_lines = JSON.stringify(routeline(route));
 	console.log("json: " + json_lines);
+	
+	var mydata = "amt_id=2&timestamp=4634&pctime="+overalltime+"&scenario_id=0" +
+	"&coords=1,2,3,4,6,7,7&total_risk=0&distance="+routeLength+"&outcome=0";
+	
+	jQuery.ajax({
+    type: "GET",
+    url: '../storeresult.php',
+    dataType: 'text',
+    data: mydata,
+
+    success: function (obj, textstatus) {
+                  if( !('error' in obj) ) {
+                      console.log(obj.result);
+                  }
+                  else {
+                      console.log(obj.error);
+                  }
+           },
+    error:function (xhr, ajaxOptions, thrownError){
+                //On error, we alert user
+                alert(thrownError);
+            }
+});
 	
 }
 
