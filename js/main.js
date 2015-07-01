@@ -7,8 +7,11 @@ var roadfile = "vector_risk_length_transformed";
 var eps = 10;
 var route = [];
 var routeLength = 0;
+var routeRisk = 0;
 
-var risks = [0, 0.125, 0.375, 0.625, 0.875];
+var startTime = new Date().getTime();
+
+var risks = [0, 0.875, 0.625, 0.375, 0.125];
 
 var leftMB = false;
 
@@ -36,6 +39,7 @@ var svg = d3.select("body").append("div").append("svg").attr("width", width).att
 var rasterlayer = svg.append("g").attr("id", "map");
 var highlightlayer = svg.append("g").attr("id", "highlight");
 var roadlayer = svg.append("g").attr("id", "roads");
+var symbollayer = svg.append("g").attr("id", "symbols");
 var pointlayer = svg.append("g").attr("id", "points");
 var selectionlayer = svg.append("g").attr("id", "selection");
 var roadnodeslayer = svg.append("g").attr("id", "roadnodes");
@@ -53,7 +57,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	if (error)
 		throw error;
 
-	var color = d3.scale.ordinal()
+	var colorRed = d3.scale.ordinal()
 		.domain([4,3,2,1])
 		.range(["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"]);
 		
@@ -66,7 +70,13 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	.range(['rgb(239,243,255)','rgb(189,215,231)','rgb(107,174,214)','rgb(33,113,181)']);
 
 
-	function setColor() {
+	function setRedColor() {
+		d3.select(this)
+		.style('stroke', function(d) {
+			return colorRed(d.properties.risk);
+		});
+	}
+	function setBlueColor() {
 		d3.select(this)
 		.style('stroke', function(d) {
 			return colorBlue(d.properties.risk);
@@ -93,19 +103,35 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		} else {
 			symbolSize = 20;
 		}
-		d3.select("#roads")
-		.append("svg:image")
+		// d3.select("#roads")
+		// .append("g")
+		// .attr("id", "symbols");
+		
+		var symbols = symbollayer.selectAll("image")
+		.data(roaddata)
+		.enter()
+		.append("image")
 		.attr("width", symbolSize)
 		.attr("height", symbolSize)
-		.attr("x", function() {
-			var x0 = self.node().getPointAtLength(0).x;
-			var x1 = self.node().getPointAtLength(self.node().getTotalLength()).x;
-			return (x0+x1-symbolSize)/2;
+		.attr("x", function(d) {
+			// var x0 = d.node().getPointAtLength(0).x;
+			// var x1 = d.node().getPointAtLength(self.node().getTotalLength()).x;
+			var x0 = projection(d.geometry.coordinates[0])[0];
+			var x1 = projection(d.geometry.coordinates[1])[0];
+			if (isNaN(x0) || isNaN(x1)) {
+				return 0;
+			}
+			return (x0+x1-symbolSize)/2.;
 		})
-		.attr("y", function() {
-			var y0 = self.node().getPointAtLength(0).y;
-			var y1 = self.node().getPointAtLength(self.node().getTotalLength()).y;
-			return (y0+y1-symbolSize)/2;
+		.attr("y", function(d) {
+			// var y0 = self.node().getPointAtLength(0).y;
+			// var y1 = self.node().getPointAtLength(self.node().getTotalLength()).y;
+			var y0 = projection(d.geometry.coordinates[0])[1];
+			var y1 = projection(d.geometry.coordinates[1])[1];
+			if (isNaN(y0) || isNaN(y1)) {
+				return 0;
+			}
+			return (y0+y1-symbolSize)/2.;
 		})
 		.attr("xlink:href", function(d) {
 			return visualization == 2 ? "data/warning.png" : "data/fire_symbol.png";
@@ -113,11 +139,11 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	}
 	
 	function changeSymbol() {
-		d3.selectAll("#symbols")
+		symbollayer.selectAll("#symbols")
 			// .transition()
 			.style("opacity", function(d) {
 			var risk = d.properties.risk;
-			return Math.random() < risks[risk] ? "0" : "1";
+			return Math.random();// < risks[risk] ? "0" : "1";
 		});			
 	}
 	
@@ -131,6 +157,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("d", path)
 		.attr("id", function(d) {return "road" + d.properties.id + "_highlight";})
 		.attr("length", function(d) {return d.properties.length;})
+		.attr("risk", function(d) {return d.properties.risk;})
 		.attr("canclick", false)
 		.attr("active", false)
 		.style("stroke", ROUTE_COLOR)
@@ -147,8 +174,17 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.attr("d", path)
 			// .attr("id", function(d) {return "road" + d.properties.id;})
 			.style("stroke-linecap", "square")
-			.each(setColor);
+			.each(setBlueColor);
 	} else if (visualization == 1) {
+		roads = roadlayer.selectAll("path")
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-linecap", "square")
+			.each(setRedColor);
+	} else if (visualization == 3) {
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -171,7 +207,6 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("opacity", 1)
 			.each(drawSymbol);
 	} else {
-		var symbolSize = 32;
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -291,8 +326,8 @@ d3.json("data/AB1.topojson", function(error, pointdata) {
 	var pointBy = d3.select("#p1").attr("cy");
 	var labelAx = pointAx - 30; 
 	var labelAy = pointAy - 10;
-	var labelBx = pointBx + 20; 
-	var labelBy = pointBy - 20;
+	var labelBx = pointBx - 30; 
+	var labelBy = pointBy - 5;
 	
 	pointlayer.selectAll("labels")
 		.data(abdata)
@@ -322,12 +357,15 @@ function drawSegment(selected) {
 	selected.attr("active", active);
 	// add or remove selected part to/from the route
 	var segLength = parseFloat(selected.attr("length"));
+	var segRisk = parseFloat(risks[selected.attr("risk")]);
 	if (active == true) {
 		 route.push(currentEnd);
 		 routeLength += segLength;
+		 routeRisk += segRisk * segLength;
 	} else {
 		route.pop();
 		routeLength -= segLength;
+		routeRisk -= segRisk * segLength;
 	}
 	// console.log("current route: " + route);
 	// console.log("current route length: " + routeLength);
@@ -436,11 +474,21 @@ function deleteRoute() {
 		;
 	});
 	routeLength = 0;
+	routeRisk = 0;
 	d3.select("#submitButton").attr("disabled", "disabled");
 	d3.select("#lengthTextfield").html("Route length: 0 m");
 }
 
 function submitRoute() {
 	console.log("final route length: " + routeLength);
+	console.log("time: " + (new Date().getTime() - startTime)/1000 + " s");
+	console.log("mean risk for route: " + routeRisk / routeLength);
+	var routeline = d3.svg.line()
+    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
+    .y(function(d,i) { return projection.invert([route[i].x, route[i].y])[1]; });
+	console.log("route: " + routeline(route));
+	var json_lines = JSON.stringify(routeline(route));
+	console.log("json: " + json_lines);
+	
 }
 

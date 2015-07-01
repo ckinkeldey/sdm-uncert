@@ -21,15 +21,12 @@
 	</head>
 	<body>
 		<h3>Please draw a route from A to B and press "submit".</h3>
-		<script>var visualization = 3;</script>
+		<script>var visualization = 4;</script>
 		<script src="lib/d3.js"></script>
 		<script src="lib/topojson.js"></script>
 		<script src="lib/toxiclibs.js"></script>
 		<script src="js/constants.js"></script>
 		<script src="js/main.js"></script>
-		<div id="legend" style="float:left; margin-left: 50px;">
-			<img src="data/legend_imp_bw.png" width="200px">
-		</div>
 		<div id="buttons" style="clear:both;">
 			<input id="deleteButton" type="button" value="Delete route" onclick="deleteRoute();" />
 			<input id="submitButton" type="button" value="Submit" disabled onclick="submitRoute()" style="float: right;"/>

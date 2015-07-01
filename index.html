@@ -2,44 +2,10 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta http-equiv="refresh" content="0; url=explicit.html" />
 		<title>Spatial decision making study</title>
-		<style>
-			path {
-				stroke-width: 10px;
-				stroke-linecap: round;
-			}
-			text {
-				font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
-				text-anchor: middle;
-				pointer-events: none;
-				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-			}
-			div {
-				float:left;
-			}
-		</style>
+
 	</head>
 	<body>
-		<h3>Please draw a route from A to B and press "submit".</h3>
-		<script>
-			var visualization = 0;
-		</script>
-		<script src="lib/d3.js"></script>
-		<script src="lib/topojson.js"></script>
-		<script src="lib/toxiclibs.js"></script>
-		<script src="js/constants.js"></script>
-		<script src="js/main.js"></script>
-		<div id="legend" style="float:left; margin-left: 50px;">
-			<img src="data/legend_blue.png" width="100px">
-		</div>
-		<div id="buttons" style="clear:both;">
-			<input id="deleteButton" type="button" value="Delete route" onclick="deleteRoute();" />
-			<input id="submitButton" type="button" value="Submit" disabled onclick="submitRoute()" style="float: right;"/>
-		</div>
-		<div style="clear:both;">
-			<p id="lengthTextfield">
-				Route length: 0 m
-			</p>
-		</div>
 	</body>
 </html>
