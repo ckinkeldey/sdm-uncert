@@ -10,6 +10,7 @@ var height = 499;
 
 var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
+var pointsABpath = "data/"+pointsABname+".topojson";
 
 var eps = 10;
 var route = [];
@@ -340,11 +341,11 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			
 });
 
-d3.json("data/AB1.topojson", function(error, pointdata) {
+d3.json(pointsABpath, function(error, pointdata) {
 	if (error)
 		throw error;
 
-	var abdata = topojson.feature(pointdata, pointdata.objects.AB1).features;
+	var abdata = topojson.feature(pointdata, pointdata.objects[pointsABname]).features;
 		
 	// points A, B
 	points = pointlayer.selectAll("circle")
