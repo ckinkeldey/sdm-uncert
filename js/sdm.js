@@ -133,10 +133,6 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		} else {
 			symbolSize = 20;
 		}
-		// d3.select("#roads")
-		// .append("g")
-		// .attr("id", "symbols");
-		
 		var symbols = symbollayer.selectAll("image")
 		.data(roaddata)
 		.enter()
@@ -171,15 +167,16 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		})
 		.attr("xlink:href", function(d) {
 			return visualization == 2 ? "images/warning.png" : "images/fire_symbol.png";
-		});
+		})
+		.style("opacity", 0);
 	}
 	
 	function changeSymbol() {
-		symbollayer.selectAll("symbols")
-			// .transition()
+		symbollayer.selectAll("image")
+			.transition()
 			.style("opacity", function(d) {
 			var risk = d.properties.risk;
-			return Math.random();// < risks[risk] ? "0" : "1";
+			return Math.random() < risks[risk] ? "1" : "0";
 		});			
 	}
 	
