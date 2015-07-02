@@ -144,24 +144,30 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("width", symbolSize)
 		.attr("height", symbolSize)
 		.attr("x", function(d) {
-			// var x0 = d.node().getPointAtLength(0).x;
-			// var x1 = d.node().getPointAtLength(self.node().getTotalLength()).x;
-			var x0 = projection(d.geometry.coordinates[0])[0];
-			var x1 = projection(d.geometry.coordinates[1])[0];
-			if (isNaN(x0) || isNaN(x1)) {
-				return 0;
-			}
+			var coords = d.geometry.coordinates;
+			if (coords[0][0].constructor === Array) {
+				var x0 = projection(coords[0][0])[0];
+				var x1 = projection(coords[1][0])[0];
+				var x2 = projection(coords[1][1])[0];
+				return (x0+x1+x2)/3.-symbolSize/2;
+			} else {
+				var x0 = projection(coords[0])[0];
+				var x1 = projection(coords[coords.length-1])[0];
+			}				
 			return (x0+x1-symbolSize)/2.;
 		})
 		.attr("y", function(d) {
-			// var y0 = self.node().getPointAtLength(0).y;
-			// var y1 = self.node().getPointAtLength(self.node().getTotalLength()).y;
-			var y0 = projection(d.geometry.coordinates[0])[1];
-			var y1 = projection(d.geometry.coordinates[1])[1];
-			if (isNaN(y0) || isNaN(y1)) {
-				return 0;
+			var coords = d.geometry.coordinates;
+			if (coords[0][0].constructor === Array) {
+				var y0 = projection(coords[0][0])[1];
+				var y1 = projection(coords[1][0])[1];
+				var y2 = projection(coords[1][1])[1];
+				return (y0+y1+y2)/3.-symbolSize/2;
+			} else {
+				var y0 = projection(coords[0])[1];
+				var y1 = projection(coords[coords.length-1])[1];
+				return (y0+y1-symbolSize)/2.;
 			}
-			return (y0+y1-symbolSize)/2.;
 		})
 		.attr("xlink:href", function(d) {
 			return visualization == 2 ? "images/warning.png" : "images/fire_symbol.png";
@@ -169,7 +175,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	}
 	
 	function changeSymbol() {
-		symbollayer.selectAll("#symbols")
+		symbollayer.selectAll("symbols")
 			// .transition()
 			.style("opacity", function(d) {
 			var risk = d.properties.risk;
