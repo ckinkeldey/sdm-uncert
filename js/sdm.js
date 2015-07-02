@@ -161,12 +161,17 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			return visualization == 2 ? "images/warning.png" : "images/fire_symbol.png";
 		})
 		.style("opacity", function(d) {
-			return visualization == 2 ? "1" : "0";
+			return getSymbolOpacity(d);
 		});
 	}
 	
 	function getSymbolSize(d) {
-		return visualization == 2 ? Math.sqrt(risks[d.properties.risk]) * 30 : 20;
+		return 20;
+		// return visualization == 2 ? risks[d.properties.risk] * 20 : 20;
+	}
+	
+	function getSymbolOpacity(d) {
+		return visualization == 2 ? risks[d.properties.risk] : 1;
 	}
 	
 	function changeSymbol() {
@@ -324,14 +329,14 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			.style("stroke-linecap", "square")
 			;
 			
-	roadnodes.on("mouseover", function() {
-		var self = d3.select(this);
-		highlightEdge(highlight, self[0][0].getPointAtLength(0), currentEnd);
-		// if (selected) {
-			// var selected1 = d3.select("#road1_highlight");
-			// selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
-		// }
-	});	
+	// roadnodes.on("mouseover", function() {
+		// var self = d3.select(this);
+		// highlightEdge(highlight, self[0][0].getPointAtLength(0), currentEnd);
+		// // if (selected) {
+			// // var selected1 = d3.select("#road1_highlight");
+			// // selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
+		// // }
+	// });	
 			
 });
 
@@ -358,7 +363,7 @@ d3.json("data/AB1.topojson", function(error, pointdata) {
 	var pointAy = d3.select("#p0").attr("cy");
 	var pointBx = d3.select("#p1").attr("cx");
 	var pointBy = d3.select("#p1").attr("cy");
-	var labelAx = pointAx - 30; 
+	var labelAx = pointAx - 26; 
 	var labelAy = pointAy - 10;
 	var labelBx = pointBx - 30; 
 	var labelBy = pointBy - 5;
@@ -371,6 +376,7 @@ d3.json("data/AB1.topojson", function(error, pointdata) {
 		.attr("y", function (d) {return d.properties.id==0?labelAy:labelBy;})
 		.style("fill", "green")
 		.style("stroke", "white")
+		.style("stroke.width", "0.5px")
 		// .style("font-weight", "bold")
 		// .style("font-size", "20px")
 		.text(function (d) {return d.properties.id==0?"A":"B";})
@@ -404,6 +410,7 @@ function drawSegment(selected) {
 	// console.log("current route: " + route);
 	// console.log("current route length: " + routeLength);
 	d3.select("#lengthTextfield").html("Route length: " + Math.round(routeLength) + " m");
+	d3.select("#riskTextfield").html("Risk: " + Math.round(100*routeRisk / routeLength)/100 + "");
 	updateEndPoint(selected);
 	
 	// color route if complete
@@ -533,6 +540,7 @@ function deleteRoute() {
 	routeRisk = 0;
 	d3.select("#submitButton").attr("disabled", "disabled");
 	d3.select("#lengthTextfield").html("Route length: 0 m");
+	d3.select("#riskTextfield").html("Risk: 0");
 }
 
 function submitRoute() {
