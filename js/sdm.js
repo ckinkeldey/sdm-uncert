@@ -8,7 +8,7 @@ var ROUTE_OPACITY_INACTIVE = 0;
 var width = 873;
 var height = 499;
 
-var backgroundPath = "./data/map.png";
+var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
 
 var eps = 10;
@@ -64,19 +64,36 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	if (error)
 		throw error;
 
+	// http://colorbrewer2.org/?type=sequential&scheme=OrRd&n=4
 	var colorRed = d3.scale.ordinal()
 		.domain([4,3,2,1])
-		.range(["#fef0d9", "#fdcc8a", "#fc8d59", "#d7301f"]);
+		.range(['rgb(254,240,217)','rgb(253,204,138)','rgb(252,141,89)','rgb(215,48,31)']);
+		
+	var colorRedDark = d3.scale.ordinal()
+		.domain([4,3,2,1])
+		.range(['rgb(252,174,145)','rgb(251,106,74)','rgb(222,45,38)','rgb(165,15,21)']);
 		
 	var colorGrey = d3.scale.ordinal()
 	.domain([4,3,2,1])
 	.range(["#eee", "#bbb", "#777", "#d333"]);
 	
+	// http://colorbrewer2.org/?type=sequential&scheme=PuBu&n=4
 	var colorBlue =  d3.scale.ordinal()
 	.domain([4,3,2,1])
-	.range(['rgb(239,243,255)','rgb(189,215,231)','rgb(107,174,214)','rgb(33,113,181)']);
+	.range(['rgb(241,238,246)','rgb(189,201,225)','rgb(116,169,207)','rgb(5,112,176)']);
+	
+	// http://colorbrewer2.org/?type=sequential&scheme=PuBu&n=5
+	var colorBlueDark =  d3.scale.ordinal()
+	.domain([4,3,2,1])
+	.range(['rgb(189,201,225)','rgb(116,169,207)','rgb(43,140,190)','rgb(4,90,141)']);
 
-
+	function setDarkRedColor() {
+		d3.select(this)
+		.style('stroke', function(d) {
+			return colorRedDark(d.properties.risk);
+		});
+	}
+	
 	function setRedColor() {
 		d3.select(this)
 		.style('stroke', function(d) {
@@ -87,6 +104,12 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		d3.select(this)
 		.style('stroke', function(d) {
 			return colorBlue(d.properties.risk);
+		});
+	}
+	function setDarkBlueColor() {
+		d3.select(this)
+		.style('stroke', function(d) {
+			return colorBlueDark(d.properties.risk);
 		});
 	}	
 	
@@ -141,7 +164,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			return (y0+y1-symbolSize)/2.;
 		})
 		.attr("xlink:href", function(d) {
-			return visualization == 2 ? "data/warning.png" : "data/fire_symbol.png";
+			return visualization == 2 ? "images/warning.png" : "images/fire_symbol.png";
 		});
 	}
 	
