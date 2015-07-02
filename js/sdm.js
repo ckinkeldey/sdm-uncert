@@ -125,32 +125,24 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	
 	function drawSymbol() {
 		var self = d3.select(this);
-		if (visualization == 2) {
-			self.attr("risk", function(d) {
-				return d.properties.risk;
-			});
-			symbolSize = Math.sqrt((5-self.attr("risk"))*100);
-		} else {
-			symbolSize = 20;
-		}
 		var symbols = symbollayer.selectAll("image")
 		.data(roaddata)
 		.enter()
 		.append("image")
-		.attr("width", symbolSize)
-		.attr("height", symbolSize)
+		.attr("width", getSymbolSize)
+		.attr("height", getSymbolSize)
 		.attr("x", function(d) {
 			var coords = d.geometry.coordinates;
 			if (coords[0][0].constructor === Array) {
 				var x0 = projection(coords[0][0])[0];
 				var x1 = projection(coords[1][0])[0];
 				var x2 = projection(coords[1][1])[0];
-				return (x0+x1+x2)/3.-symbolSize/2;
+				return (x0+x1+x2)/3.-getSymbolSize(d)/2;
 			} else {
 				var x0 = projection(coords[0])[0];
 				var x1 = projection(coords[coords.length-1])[0];
 			}				
-			return (x0+x1-symbolSize)/2.;
+			return (x0+x1-getSymbolSize(d))/2.;
 		})
 		.attr("y", function(d) {
 			var coords = d.geometry.coordinates;
@@ -158,17 +150,23 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 				var y0 = projection(coords[0][0])[1];
 				var y1 = projection(coords[1][0])[1];
 				var y2 = projection(coords[1][1])[1];
-				return (y0+y1+y2)/3.-symbolSize/2;
+				return (y0+y1+y2)/3.-getSymbolSize(d)/2;
 			} else {
 				var y0 = projection(coords[0])[1];
 				var y1 = projection(coords[coords.length-1])[1];
-				return (y0+y1-symbolSize)/2.;
+				return (y0+y1-getSymbolSize(d))/2.;
 			}
 		})
 		.attr("xlink:href", function(d) {
 			return visualization == 2 ? "images/warning.png" : "images/fire_symbol.png";
 		})
-		.style("opacity", 0);
+		.style("opacity", function(d) {
+			return visualization == 2 ? "1" : "0";
+		});
+	}
+	
+	function getSymbolSize(d) {
+		return visualization == 2 ? Math.sqrt(risks[d.properties.risk]) * 30 : 20;
 	}
 	
 	function changeSymbol() {
@@ -209,6 +207,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-linecap", "square")
 			.each(setBlueColor);
 	} else if (visualization == 1) {
+		// red color
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -229,6 +228,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			;
 			setInterval(function() {changeBlocked(roads);}, 500);
 	} else if (visualization == 2){
+		// static symbols
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -247,7 +247,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.attr("d", path)
 			.style("stroke-linecap", "square")
 			.style("stroke", "grey")
-			.style("opacity", 1)
+			.style("opacity", 0)
 			.each(drawSymbol)
 			;
 			setInterval(changeSymbol, 500);
