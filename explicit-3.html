@@ -14,7 +14,7 @@
 				pointer-events: none;
 				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 			}
-						div {
+			div {
 				float:left;
 			}
 		</style>
@@ -22,14 +22,17 @@
 	<body>
 		<h3>Please draw a route from A to B and press "submit".</h3>
 		<script>
-			var visualization = 3;
+			var visualization = 1;
 			var pointsABname = "AB3_vector";
 		</script>
 		<script src="lib/d3.js"></script>
 		<script src="lib/topojson.js"></script>
+		<script src="lib/jquery.js"></script>
 		<script src="lib/toxiclibs.js"></script>
-		<script src="js/constants.js"></script>
 		<script src="js/sdm.js"></script>
+		<div id="legend" style="float:left; margin-left: 50px;">
+			<img src="images/legend_blue_border.png" width="100px">
+		</div>
 		<div id="buttons" style="clear:both;">
 			<input id="deleteButton" type="button" value="Delete route" onclick="deleteRoute();" />
 			<input id="submitButton" type="button" value="Submit" disabled onclick="submitRoute()" style="float: right;"/>
