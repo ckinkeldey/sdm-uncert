@@ -19,6 +19,9 @@ var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
 var pointsABpath = "data/"+pointsABname+".topojson";
 
+var SYMBOL_RISK = "images/warning.png";
+var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
+
 var eps = 10;
 var route = [];
 var routeLength = 0;
@@ -171,7 +174,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			}
 		})
 		.attr("xlink:href", function(d) {
-			return visualization == EXPLICIT_SYMBOLS ? "images/warning.png" : "images/fire_symbol.png";
+			return visualization == EXPLICIT_SYMBOLS ? SYMBOL_RISK : SYMBOL_BLOCKAGE;
 		})
 		.style("opacity", function(d) {
 			return visualization == EXPLICIT_SYMBOLS ? getSymbolOpacity(d) : 1;
