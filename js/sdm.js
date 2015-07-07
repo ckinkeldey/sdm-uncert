@@ -1,16 +1,28 @@
+var ROAD_COLOR = "grey";
+var ROAD_COLOR_BLOCKED = "#F00";
+
 var ROUTE_COLOR = "yellow";
 var ROUTE_COLOR_COMPLETE = "green";
 	
 var ROUTE_OPACITY_ACTIVE = 1;
 var ROUTE_OPACITY_SELECTABLE = 0.5;
 var ROUTE_OPACITY_INACTIVE = 0;
+var ROUTE_STROKE_WIDTH = 14;
+
+var HIGHLIGHT_STROKE_WIDTH = 30;
+
+var START_END_POINTS_COLOR = "yellow";
+var START_END_POINTS_STROKE_COLOR = "#555";
+var START_END_POINTS_STROKE_WIDTH = "1px";
 
 var WITHOUT = 0;
 var EXPLICIT = 1;
 var EXPLICIT_RED = 2;
 var EXPLICIT_SYMBOLS = 3;
-var IMPLICIT_BW = 4;
+var IMPLICIT_COLOR = 4;
 var IMPLICIT_SYMBOLS = 5;
+
+var SYMBOL_SIZE = 20;
 
 var width = 873;
 var height = 499;
@@ -19,17 +31,18 @@ var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
 var pointsABpath = "data/"+pointsABname+".topojson";
 
-var SYMBOL_RISK = "images/warning.png";
+var SYMBOL_RISK = "images/warning_red_white.png";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
+
+var risks = [0, 0.14, 0.10, 0.05, 0.01];
 
 var eps = 10;
 var route = [];
 var routeLength = 0;
-var routeRisk = 0;
+var routeRisk = 1;
+var probNotBlocked = 1;
 
 var startTime = new Date().getTime();
-
-var risks = [0, 0.875, 0.625, 0.375, 0.125];
 
 var leftMB = false;
 
@@ -38,10 +51,10 @@ var currentEnd;
 
 var rasterX = 0,
     rasterY = 0, // Offset (px) for positioning raster in 	<div>
-    // imgWidth = 873, // <image> dimensions (don't change these)
-    // imgHeight = 499,
-    center = [8.73 / 2., 4.99 / 2.], // Center vector [lon, lat]
-    scale = 873 * 2.1 * Math.PI,
+    imgWidth = 873, // <image> dimensions (don't change these)
+    imgHeight = 499,
+    center = [imgWidth / 200., imgHeight / 200.], // Center vector [lon, lat]
+    scale = imgWidth * 2.1 * Math.PI,
     translate = [width/2, height/2];
 
 var projection = d3.geo.mercator()
@@ -98,45 +111,40 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	.domain([4,3,2,1])
 	.range(['rgb(189,201,225)','rgb(116,169,207)','rgb(43,140,190)','rgb(4,90,141)']);
 
-	function setWhiteColor() {
-		d3.select(this)
-		.style('stroke', "white");
-	}
-	
 	function setDarkRedColor() {
-		d3.select(this)
-		.style('stroke', function(d) {
+		d3.select(this).style('stroke', function(d) {
 			return colorRedDark(d.properties.risk);
 		});
 	}
-	
+
 	function setRedColor() {
-		d3.select(this)
-		.style('stroke', function(d) {
+		d3.select(this).style('stroke', function(d) {
 			return colorRed(d.properties.risk);
 		});
 	}
 	function setBlueColor() {
-		d3.select(this)
-		.style('stroke', function(d) {
+		d3.select(this).style('stroke', function(d) {
 			return colorBlue(d.properties.risk);
 		});
 	}
+	
 	function setDarkBlueColor() {
-		d3.select(this)
-		.style('stroke', function(d) {
+		d3.select(this).style('stroke', function(d) {
 			return colorBlueDark(d.properties.risk);
 		});
-	}	
-	
+	}
+
 	function changeBlocked(roads) {
 		roads
-			.transition()
-			.duration(500)
-			.style("stroke", function(d) {
-			var risk = d.properties.risk;
-			return Math.random() < risks[risk] ? "#222" : "white";
-		});
+				.transition()
+				.duration(0)
+				.style(
+						"stroke",
+						function(d) {
+							var risk = d.properties.risk;
+							return Math.random() < (5 - risk) / 5 ? ROAD_COLOR_BLOCKED
+									: ROAD_COLOR;
+						});
 	}
 	
 	function drawSymbol() {
@@ -177,13 +185,12 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			return visualization == EXPLICIT_SYMBOLS ? SYMBOL_RISK : SYMBOL_BLOCKAGE;
 		})
 		.style("opacity", function(d) {
-			return visualization == EXPLICIT_SYMBOLS ? getSymbolOpacity(d) : 1;
+			return 1;//visualization == EXPLICIT_SYMBOLS ? getSymbolOpacity(d) : 1;
 		});
 	}
 	
 	function getSymbolSize(d) {
-		return 20;
-		// return visualization == 2 ? risks[d.properties.risk] * 20 : 20;
+		return visualization == EXPLICIT_SYMBOLS ? Math.sqrt(5-d.properties.risk) * 10 : SYMBOL_SIZE;
 	}
 	
 	function getSymbolOpacity(d) {
@@ -195,7 +202,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.transition()
 			.style("opacity", function(d) {
 			var risk = d.properties.risk;
-			return Math.random() < risks[risk] ? "1" : "0";
+			return Math.random() < (5-risk)/5 ? "1" : "0";
 		});			
 	}
 	
@@ -213,7 +220,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("canclick", false)
 		.attr("active", false)
 		.style("stroke", ROUTE_COLOR)
-		.style("stroke-width", 30)
+		.style("stroke-width", HIGHLIGHT_STROKE_WIDTH)
 		.style("stroke-linecap", "round")
 		.style("opacity", ROUTE_OPACITY_INACTIVE);
 		
@@ -225,8 +232,9 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.append("path")
 			.attr("d", path)
 			// .attr("id", function(d) {return "road" + d.properties.id;})
-			.style("stroke-linecap", "square")
-			.each(setWhiteColor);
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
+			.each(function(d) {d3.select(this).style('stroke', "grey");});
 	} else if (visualization == EXPLICIT) {
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
@@ -234,7 +242,8 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.append("path")
 			.attr("d", path)
 			// .attr("id", function(d) {return "road" + d.properties.id;})
-			.style("stroke-linecap", "square")
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
 			.each(setBlueColor);
 	} else if (visualization == EXPLICIT_RED) {
 		// red color
@@ -244,9 +253,10 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.append("path")
 			.attr("d", path)
 			// .attr("id", function(d) {return "road" + d.properties.id;})
-			.style("stroke-linecap", "square")
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
 			.each(setRedColor);
-	} else if (visualization == IMPLICIT_BW) {
+	} else if (visualization == IMPLICIT_COLOR) {
 		// animation b/w
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
@@ -254,7 +264,8 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.append("path")
 			.attr("d", path)
 			// .attr("id", function(d) {return "road" + d.properties.id;})
-			.style("stroke-linecap", "butt")
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
 			// .style("stroke", function() {return Math.random() <=0.5 ? "#fef0d9" : "#d7301f";})
 			;
 			setInterval(function() {changeBlocked(roads);}, 500);
@@ -266,7 +277,8 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.append("path")
 			.attr("d", path)
 			// .attr("id", function(d) {return "road" + d.properties.id;})
-			.style("stroke-linecap", "square")
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
 			.style("stroke", "grey")
 			.style("opacity", 1)
 			.each(drawSymbol);
@@ -277,7 +289,8 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.enter()
 			.append("path")
 			.attr("d", path)
-			.style("stroke-linecap", "square")
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
 			.style("stroke", "grey")
 			.style("opacity", 1)
 			.each(drawSymbol)
@@ -293,7 +306,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("d", path)
 		.attr("id", function(d) {return "road" + d.properties.id;})
 		.style("stroke", "#f00")
-		.style("stroke-width", 30)
+		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		.style("stroke-linecap", "butt")
 		.style("opacity", 0)
 		;
@@ -382,18 +395,19 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.attr("cx", function(d) {return projection(d.geometry.coordinates)[0];})
 		.attr("cy",  function(d) {return projection(d.geometry.coordinates)[1];})
 		.attr("r", "12px")
-		.style("fill", "green")
-		.style("stroke", "white")
+		.style("fill", START_END_POINTS_COLOR)
+		.style("stroke", START_END_POINTS_STROKE_COLOR)
+		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 	;
 	
 	var pointAx = d3.select("#p0").attr("cx");
 	var pointAy = d3.select("#p0").attr("cy");
 	var pointBx = d3.select("#p1").attr("cx");
 	var pointBy = d3.select("#p1").attr("cy");
-	var labelAx = pointAx - 26; 
-	var labelAy = pointAy - 10;
-	var labelBx = pointBx - 30; 
-	var labelBy = pointBy - 5;
+	var labelAx = parseFloat(pointAx) + A_B_LABEL_POSITION[0]; 
+	var labelAy = parseFloat(pointAy) + A_B_LABEL_POSITION[1];
+	var labelBx = parseFloat(pointBx) + A_B_LABEL_POSITION[2]; 
+	var labelBy = parseFloat(pointBy) + A_B_LABEL_POSITION[3];
 	
 	pointlayer.selectAll("labels")
 		.data(abdata)
@@ -401,11 +415,11 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.append("svg:text")
 		.attr("x", function (d) {return d.properties.id==0?labelAx:labelBx;})
 		.attr("y", function (d) {return d.properties.id==0?labelAy:labelBy;})
-		.style("fill", "green")
-		.style("stroke", "white")
-		.style("stroke.width", "0.5px")
-		// .style("font-weight", "bold")
-		// .style("font-size", "20px")
+		.style("fill", START_END_POINTS_COLOR)
+		.style("stroke", START_END_POINTS_STROKE_COLOR)
+		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
+		 .style("font-weight", "bold")
+		 .style("font-size", "40px")
 		.text(function (d) {return d.properties.id==0?"A":"B";})
 	;
 	
@@ -428,16 +442,18 @@ function drawSegment(selected) {
 	if (active == true) {
 		 route.push(currentEnd);
 		 routeLength += segLength;
-		 routeRisk += segRisk * segLength;
+		 probNotBlocked *= (1-segRisk);// * segLength;
+		 routeRisk = 1 - probNotBlocked;
 	} else {
 		route.pop();
 		routeLength -= segLength;
-		routeRisk -= segRisk * segLength;
+		probNotBlocked /= (1-segRisk);// * segLength;
+		routeRisk = 1 - probNotBlocked;
 	}
 	// console.log("current route: " + route);
 	// console.log("current route length: " + routeLength);
 	d3.select("#lengthTextfield").html("Route length: " + Math.round(routeLength) + " m");
-	d3.select("#riskTextfield").html("Risk: " + Math.round(100*routeRisk / routeLength)/100 + "");
+	d3.select("#riskTextfield").html("Not blocked: " + Math.round(100*probNotBlocked ) + "%");
 	updateEndPoint(selected);
 	
 	// color route if complete
@@ -567,7 +583,7 @@ function deleteRoute() {
 	routeRisk = 0;
 	d3.select("#submitButton").attr("disabled", "disabled");
 	d3.select("#lengthTextfield").html("Route length: 0 m");
-	d3.select("#riskTextfield").html("Risk: 0");
+	d3.select("#riskTextfield").html("Not blocked:");
 }
 
 function submitRoute() {
