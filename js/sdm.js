@@ -307,7 +307,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("id", function(d) {return "road" + d.properties.id;})
 		.style("stroke", "#f00")
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
-		.style("stroke-linecap", "butt")
+		.style("stroke-linecap", "round")
 		.style("opacity", 0)
 		;
 	
@@ -471,12 +471,12 @@ function drawSegment(selected) {
 function updateEndPoint(segment) {
 	var start = segment.node().getPointAtLength(0);
 	var end = segment.node().getPointAtLength(segment.node().getTotalLength());
-	var p0 = new toxi.geom.Vec2D(start.x, start.y);
-	var p1 = new toxi.geom.Vec2D(end.x, end.y);
-	if (isIdentical(p0, currentEnd)) {
-		currentEnd = p1;
-	} else if (isIdentical(p1, currentEnd)) {
-		currentEnd = p0;
+	var pStart = new toxi.geom.Vec2D(start.x, start.y);
+	var pEnd = new toxi.geom.Vec2D(end.x, end.y);
+	if (isIdentical(pStart, currentEnd)) {
+		currentEnd = pEnd;
+	} else if (isIdentical(pEnd, currentEnd)) {
+		currentEnd = pStart;
 	}
 }
 
@@ -545,7 +545,7 @@ function isEdge(p0, p1, edge) {
 
 function isValid(path) {
 	var start = path.node().getPointAtLength(0);
-	var end = path.node().getPointAtLength(path.node().getTotalLength());
+	var end = path.node().getPointAtLength(path.node().getTotalLength()-0.01);
 	var p0 = new toxi.geom.Vec2D(start.x, start.y);
 	var p1 = new toxi.geom.Vec2D(end.x, end.y);
 	return isIdentical(p0,currentEnd) || isIdentical(p1,currentEnd);
@@ -581,6 +581,7 @@ function deleteRoute() {
 	});
 	routeLength = 0;
 	routeRisk = 0;
+	probNotBlocked = 1;
 	d3.select("#submitButton").attr("disabled", "disabled");
 	d3.select("#lengthTextfield").html("Route length: 0 m");
 	d3.select("#riskTextfield").html("Not blocked:");
@@ -590,7 +591,10 @@ function submitRoute() {
 	var overalltime = (new Date().getTime() - startTime)/1000;
 	console.log("final route length: " + routeLength);
 	console.log("time: " + overalltime + " s.");
-	console.log("mean risk for route: " + routeRisk / routeLength);
+	var probability = Math.round(100*probNotBlocked)/100;
+	console.log("overall prob for not blocked: " + probability);
+	var displayString = "p(not blocked): " + probability;
+	var decision = Math.random() > probNotBlocked ? alert(displayString + " -> blocked!") : alert(displayString + " -> not blocked!");
 	var routeline = d3.svg.line()
     .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
     .y(function(d,i) { return projection.invert([route[i].x, route[i].y])[1]; });
@@ -601,25 +605,25 @@ function submitRoute() {
 	var mydata = "amt_id=2&timestamp=4634&pctime="+overalltime+"&scenario_id=0" +
 	"&coords=1,2,3,4,6,7,7&total_risk=0&distance="+routeLength+"&outcome=0";
 	
-	jQuery.ajax({
-    type: "GET",
-    url: '../storeresult.php',
-    dataType: 'text',
-    data: mydata,
-
-    success: function (obj, textstatus) {
-                  if( !('error' in obj) ) {
-                      console.log(obj.result);
-                  }
-                  else {
-                      console.log(obj.error);
-                  }
-           },
-    error:function (xhr, ajaxOptions, thrownError){
-                //On error, we alert user
-                alert(thrownError);
-            }
-});
+//	jQuery.ajax({
+//    type: "GET",
+//    url: '../storeresult.php',
+//    dataType: 'text',
+//    data: mydata,
+//
+//    success: function (obj, textstatus) {
+//                  if( !('error' in obj) ) {
+//                      console.log(obj.result);
+//                  }
+//                  else {
+//                      console.log(obj.error);
+//                  }
+//           },
+//    error:function (xhr, ajaxOptions, thrownError){
+//                //On error, we alert user
+//                alert(thrownError);
+//            }
+//	});
 	
 }
 
