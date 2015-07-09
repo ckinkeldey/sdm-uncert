@@ -1,5 +1,5 @@
-var ROAD_COLOR = "grey";
-var ROAD_COLOR_BLOCKED = "#F00";
+var ROAD_COLOR = "white";
+var ROAD_COLOR_BLOCKED = "#55f";
 
 var ROUTE_COLOR = "yellow";
 var ROUTE_COLOR_COMPLETE = "green";
@@ -27,6 +27,9 @@ var SYMBOL_SIZE = 20;
 var width = 873;
 var height = 499;
 
+var route0 = [5,32,33,34,83,84,67,62,63];
+var route1 = [7,51,52,53,57,41,36,19,21,69,40,23,27];
+
 var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
 var pointsABpath = "data/"+pointsABname+".topojson";
@@ -34,7 +37,7 @@ var pointsABpath = "data/"+pointsABname+".topojson";
 var SYMBOL_RISK = "images/warning_red_white.png";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
 
-var risks = [0, 0.14, 0.10, 0.05, 0.01];
+var risks = [0, 0.2, 0.10, 0.05, 0.025];
 
 var eps = 10;
 var route = [];
@@ -137,14 +140,23 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	function changeBlocked(roads) {
 		roads
 				.transition()
-				.duration(0)
+				.duration(500)
 				.style(
 						"stroke",
 						function(d) {
 							var risk = d.properties.risk;
 							return Math.random() < (5 - risk) / 5 ? ROAD_COLOR_BLOCKED
 									: ROAD_COLOR;
-						});
+						})
+					.style("opacity", function(d) {
+						var id = d.properties.id;
+						if (route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+							return "0";
+						} else {
+							return 1;
+						}
+					})
+						;
 	}
 	
 	function drawSymbol() {
@@ -201,6 +213,10 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		symbollayer.selectAll("image")
 			.transition()
 			.style("opacity", function(d) {
+			var id = d.properties.id;
+			if (route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+				return "0";
+			} 
 			var risk = d.properties.risk;
 			return Math.random() < (5-risk)/5 ? "1" : "0";
 		});			
@@ -219,10 +235,25 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("risk", function(d) {return d.properties.risk;})
 		.attr("canclick", false)
 		.attr("active", false)
-		.style("stroke", ROUTE_COLOR)
+		.style("stroke", function(d) {
+			var id = d.properties.id;
+			if (route0.indexOf(id) > -1) {
+				return "#55a";
+			} else {
+				return "#5a5";
+			}
+		})
 		.style("stroke-width", HIGHLIGHT_STROKE_WIDTH)
 		.style("stroke-linecap", "round")
-		.style("opacity", ROUTE_OPACITY_INACTIVE);
+		.style("opacity", function(d) {
+			var id = d.properties.id;
+			if (route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+				return "0";
+			} else {
+				return 1;
+			}
+		})
+		;
 		
 	// layer for the roads
 	if (visualization == WITHOUT) {
