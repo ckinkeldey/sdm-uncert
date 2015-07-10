@@ -1,5 +1,5 @@
-var ROAD_COLOR = "white";
-var ROAD_COLOR_BLOCKED = "#55f";
+var ROAD_COLOR = "grey";
+var ROAD_COLOR_BLOCKED = "#a00";
 
 var ROUTE_COLOR = "yellow";
 var ROUTE_COLOR_COMPLETE = "green";
@@ -27,8 +27,16 @@ var SYMBOL_SIZE = 20;
 var width = 873;
 var height = 499;
 
-var route0 = [5,32,33,34,83,84,67,62,63];
-var route1 = [7,51,52,53,57,41,36,19,21,69,40,23,27];
+var ROUTE_0 = [5,32,33,34,83,84,67,62,63];
+var ROUTE_1 = [7,51,52,53,57,41,36,19,21,69,40,23,27];
+
+var route0 = [];
+var route1 = [];
+if (routes) {
+	route0 = ROUTE_0;
+	route1 = ROUTE_1;
+}
+
 
 var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
@@ -37,8 +45,7 @@ var pointsABpath = "data/"+pointsABname+".topojson";
 var SYMBOL_RISK = "images/warning_red_white.png";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
 
-var risks = [0, 0.2, 0.10, 0.05, 0.025];
-
+var minLength = 61.5;
 var eps = 10;
 var route = [];
 var routeLength = 0;
@@ -122,11 +129,19 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 
 	function setRedColor() {
 		d3.select(this).style('stroke', function(d) {
+			var id = d.properties.id;
+			if (routes && route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+				return ROAD_COLOR;
+			}
 			return colorRed(d.properties.risk);
 		});
 	}
 	function setBlueColor() {
 		d3.select(this).style('stroke', function(d) {
+			var id = d.properties.id;
+			if (routes && route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+				return ROAD_COLOR;
+			}
 			return colorBlue(d.properties.risk);
 		});
 	}
@@ -139,24 +154,36 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 
 	function changeBlocked(roads) {
 		roads
-				.transition()
-				.duration(500)
-				.style(
-						"stroke",
-						function(d) {
-							var risk = d.properties.risk;
-							return Math.random() < (5 - risk) / 5 ? ROAD_COLOR_BLOCKED
-									: ROAD_COLOR;
-						})
-					.style("opacity", function(d) {
-						var id = d.properties.id;
-						if (route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
-							return "0";
-						} else {
-							return 1;
-						}
-					})
-						;
+		.transition()
+		.duration(250)
+		.style(
+				"stroke",
+				function(d) {
+					var id = d.properties.id;
+					if (routes && route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+						return ROAD_COLOR;
+					} 
+					var risk = d.properties.risk;
+//					return Math.random() < (5 - risk) / 5 ? ROAD_COLOR_BLOCKED
+//							: ROAD_COLOR;
+					var segLength = parseFloat(d.properties.length);
+					var segRisk = parseFloat(risks[d.properties.risk]);
+					var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
+					return Math.random() > segProbNotBlocked ? ROAD_COLOR_BLOCKED
+							: ROAD_COLOR;
+				})
+//					.style("stroke", ROAD_COLOR)
+			.style("opacity", function(d) {
+				var id = d.properties.id;
+				if (routes && route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+					return "1";
+				} else {
+//							var risk = d.properties.risk;
+//							return Math.random() < (5 - risk) / 5 ? 1 : 0;
+					return "1";
+				}
+			})
+				;
 	}
 	
 	function drawSymbol() {
@@ -212,15 +239,24 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	function changeSymbol() {
 		symbollayer.selectAll("image")
 			.transition()
+			.duration(250)
 			.style("opacity", function(d) {
 			var id = d.properties.id;
-			if (route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
+			if (routes && route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
 				return "0";
-			} 
-			var risk = d.properties.risk;
-			return Math.random() < (5-risk)/5 ? "1" : "0";
+			}
+			var segLength = parseFloat(d.properties.length);
+			var segRisk = parseFloat(risks[d.properties.risk]);
+			var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
+			return Math.random() > segProbNotBlocked ? "1" : "0";
 		});			
 	}
+	
+//	function computeRisk(d) {
+//		var risk = d.properties.risk;
+//		var length = d.properties.length;
+//		return length / minLength * (5-risk)/5;
+//	}
 	
 	var roaddata = topojson.feature(roaddata, roaddata.objects[roadfile]).features;
 	
@@ -239,7 +275,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			var id = d.properties.id;
 			if (route0.indexOf(id) > -1) {
 				return "#55a";
-			} else {
+			} else if (route1.indexOf(id) > -1){
 				return "#5a5";
 			}
 		})
@@ -288,7 +324,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-linecap", "round")
 			.each(setRedColor);
 	} else if (visualization == IMPLICIT_COLOR) {
-		// animation b/w
+		// animation color
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -431,6 +467,21 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 	;
 	
+	if (visualization == WITHOUT) {
+		var riskCenter = [4.85,3];
+		pointlayer.selectAll("circle")
+		.data(abdata)
+		.enter()
+		.append("circle")
+		.attr("id", function(d) {return "p" + d.properties.id;})
+		.attr("cx", function(d) {return projection(riskCenter)[0];})
+		.attr("cy",  function(d) {return projection(riskCenter)[1];})
+		.attr("r", "12px")
+		.style("fill", START_END_POINTS_COLOR)
+		.style("stroke", "red")
+		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
+	}
+	
 	var pointAx = d3.select("#p0").attr("cx");
 	var pointAy = d3.select("#p0").attr("cy");
 	var pointBx = d3.select("#p1").attr("cx");
@@ -473,12 +524,15 @@ function drawSegment(selected) {
 	if (active == true) {
 		 route.push(currentEnd);
 		 routeLength += segLength;
-		 probNotBlocked *= (1-segRisk);// * segLength;
+		 var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
+		 probNotBlocked *= segProbNotBlocked;
+		 console.log("Length: " + segLength + " -> " + Math.pow(1 - segRisk, segLength / minLength))
 		 routeRisk = 1 - probNotBlocked;
 	} else {
 		route.pop();
 		routeLength -= segLength;
-		probNotBlocked /= (1-segRisk);// * segLength;
+		var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
+		probNotBlocked /= segProbNotBlocked;
 		routeRisk = 1 - probNotBlocked;
 	}
 	// console.log("current route: " + route);
