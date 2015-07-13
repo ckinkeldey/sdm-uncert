@@ -1,5 +1,7 @@
 var ROAD_COLOR = "grey";
 var ROAD_COLOR_BLOCKED = "#a00";
+var ROAD_NODES_COLOR = "grey";
+var ROAD_NODES_STROKE = "grey";
 
 var ROUTE_COLOR = "yellow";
 var ROUTE_COLOR_COMPLETE = "green";
@@ -16,13 +18,18 @@ var START_END_POINTS_STROKE_COLOR = "#555";
 var START_END_POINTS_STROKE_WIDTH = "1px";
 
 var WITHOUT = 0;
-var EXPLICIT = 1;
-var EXPLICIT_RED = 2;
-var EXPLICIT_SYMBOLS = 3;
-var IMPLICIT_COLOR = 4;
-var IMPLICIT_SYMBOLS = 5;
+var EXPLICIT_COLOR = 1;
+var EXPLICIT_COLOR_M = 2;
+var EXPLICIT_SYMBOL = 3;
+var EXPLICIT_SYMBOL_M = 4;
+var EXPLICIT_TEXTURE = 5;
+var EXPLICIT_TEXTURE_M = 5;
+var IMPLICIT_COLOR = 10;
+var IMPLICIT_SYMBOLS = 11;
 
 var SYMBOL_SIZE = 20;
+var SYMBOL_COLOR = "rgb(5,112,176)";
+var SYMBOL_STROKE_COLOR = "white";
 
 var width = 873;
 var height = 499;
@@ -188,6 +195,88 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	
 	function drawSymbol() {
 		var self = d3.select(this);
+		var symbols = symbollayer.selectAll("rect")
+		.data(roaddata)
+		.enter()
+		.append("rect")
+		.attr("width", getSymbolSize)
+		.attr("height", getSymbolSize)
+		.attr("x", function(d) {
+			var coords = d.geometry.coordinates;
+			if (coords[0][0].constructor === Array) {
+				var x0 = projection(coords[0][0])[0];
+				var x1 = projection(coords[1][0])[0];
+				var x2 = projection(coords[1][1])[0];
+				return (x0+x1+x2)/3.-getSymbolSize(d)/2;
+			} else {
+				var x0 = projection(coords[0])[0];
+				var x1 = projection(coords[coords.length-1])[0];
+			}				
+			return (x0+x1-getSymbolSize(d))/2.;
+		})
+		.attr("y", function(d) {
+			var coords = d.geometry.coordinates;
+			if (coords[0][0].constructor === Array) {
+				var y0 = projection(coords[0][0])[1];
+				var y1 = projection(coords[1][0])[1];
+				var y2 = projection(coords[1][1])[1];
+				return (y0+y1+y2)/3.-getSymbolSize(d)/2;
+			} else {
+				var y0 = projection(coords[0])[1];
+				var y1 = projection(coords[coords.length-1])[1];
+				return (y0+y1-getSymbolSize(d))/2.;
+			}
+		})
+		.style("fill", SYMBOL_COLOR)
+		.style("stroke", SYMBOL_STROKE_COLOR)
+		.style("opacity", function(d) {
+			return 1;//visualization == EXPLICIT_SYMBOL_M ? getSymbolOpacity(d) : 1;
+		});
+	}
+	
+	function drawCircleSymbol() {
+		var self = d3.select(this);
+		var symbols = symbollayer.selectAll("circle")
+		.data(roaddata)
+		.enter()
+		.append("circle")
+		.attr("r", getCircleRadius)
+//		.attr("height", getSymbolSize)
+		.attr("cx", function(d) {
+			var coords = d.geometry.coordinates;
+			if (coords[0][0].constructor === Array) {
+				var x0 = projection(coords[0][0])[0];
+				var x1 = projection(coords[1][0])[0];
+				var x2 = projection(coords[1][1])[0];
+				return (x0+x1+x2)/3.;
+			} else {
+				var x0 = projection(coords[0])[0];
+				var x1 = projection(coords[coords.length-1])[0];
+			}				
+			return (x0+x1)/2.;
+		})
+		.attr("cy", function(d) {
+			var coords = d.geometry.coordinates;
+			if (coords[0][0].constructor === Array) {
+				var y0 = projection(coords[0][0])[1];
+				var y1 = projection(coords[1][0])[1];
+				var y2 = projection(coords[1][1])[1];
+				return (y0+y1+y2)/3.;
+			} else {
+				var y0 = projection(coords[0])[1];
+				var y1 = projection(coords[coords.length-1])[1];
+				return (y0+y1)/2.;
+			}
+		})
+		.style("fill", SYMBOL_COLOR)
+		.style("stroke", SYMBOL_STROKE_COLOR)
+		.style("opacity", function(d) {
+			return 1;//visualization == EXPLICIT_SYMBOL_M ? getSymbolOpacity(d) : 1;
+		});
+	}
+	
+	function drawIcon() {
+		var self = d3.select(this);
 		var symbols = symbollayer.selectAll("image")
 		.data(roaddata)
 		.enter()
@@ -221,15 +310,23 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			}
 		})
 		.attr("xlink:href", function(d) {
-			return visualization == EXPLICIT_SYMBOLS ? SYMBOL_RISK : SYMBOL_BLOCKAGE;
+			return visualization == EXPLICIT_SYMBOL_M ? SYMBOL_RISK : SYMBOL_BLOCKAGE;
 		})
 		.style("opacity", function(d) {
-			return 1;//visualization == EXPLICIT_SYMBOLS ? getSymbolOpacity(d) : 1;
+			return 1;//visualization == EXPLICIT_SYMBOL_M ? getSymbolOpacity(d) : 1;
 		});
 	}
 	
+	function getCircleRadius(d) {
+		var radius = Math.sqrt((5-d.properties.risk)/Math.PI) * 8;
+//		console.log("radius: " + radius);
+		return radius;
+	}
+	
 	function getSymbolSize(d) {
-		return visualization == EXPLICIT_SYMBOLS ? Math.sqrt(5-d.properties.risk) * 10 : SYMBOL_SIZE;
+		var symbolSize = visualization == EXPLICIT_SYMBOL || visualization == EXPLICIT_SYMBOL_M ? Math.sqrt(2*(5-d.properties.risk)) * 8 : SYMBOL_SIZE;
+//		console.log("symbol size: " + symbolSize);
+		return symbolSize;
 	}
 	
 	function getSymbolOpacity(d) {
@@ -302,7 +399,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-width", ROUTE_STROKE_WIDTH)
 			.style("stroke-linecap", "round")
 			.each(function(d) {d3.select(this).style('stroke', "grey");});
-	} else if (visualization == EXPLICIT) {
+	} else if (visualization == EXPLICIT_COLOR) {
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -312,7 +409,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-width", ROUTE_STROKE_WIDTH)
 			.style("stroke-linecap", "round")
 			.each(setBlueColor);
-	} else if (visualization == EXPLICIT_RED) {
+	} else if (visualization == EXPLICIT_COLOR_M) {
 		// red color
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
@@ -336,7 +433,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			// .style("stroke", function() {return Math.random() <=0.5 ? "#fef0d9" : "#d7301f";})
 			;
 			setInterval(function() {changeBlocked(roads);}, 500);
-	} else if (visualization == EXPLICIT_SYMBOLS){
+	} else if (visualization == EXPLICIT_SYMBOL){
 		// static symbols
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
@@ -348,7 +445,20 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-linecap", "round")
 			.style("stroke", "grey")
 			.style("opacity", 1)
-			.each(drawSymbol);
+			.each(drawCircleSymbol);
+	} else if (visualization == EXPLICIT_SYMBOL_M){
+		// static symbols
+		roads = roadlayer.selectAll("path")
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-width", ROUTE_STROKE_WIDTH)
+			.style("stroke-linecap", "round")
+			.style("stroke", "grey")
+			.style("opacity", 1)
+			.each(drawIcon);
 	} else if (visualization == IMPLICIT_SYMBOLS){
 		// animated symbols
 		roads = roadlayer.selectAll("path")
@@ -360,7 +470,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("stroke-linecap", "round")
 			.style("stroke", "grey")
 			.style("opacity", 1)
-			.each(drawSymbol)
+			.each(drawIcon)
 			;
 			setInterval(changeSymbol, 500);
 	}
@@ -430,10 +540,11 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			.append("path")
 			.attr("d", path)
 			.attr("id", function(d) {return "roadnode" + d.properties.id;})
-			.style("fill", "white")
-			.style("stroke", "white")
+			.style("fill", ROAD_NODES_COLOR)
+			.style("stroke", ROAD_NODES_STROKE)
 			.style("stroke-width", "5px")
 			.style("stroke-linecap", "square")
+			.style("opacity", 1)
 			;
 			
 	// roadnodes.on("mouseover", function() {
