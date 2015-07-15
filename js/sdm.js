@@ -10,6 +10,7 @@ var ROUTE_OPACITY_ACTIVE = 1;
 var ROUTE_OPACITY_SELECTABLE = 0.5;
 var ROUTE_OPACITY_INACTIVE = 0;
 var ROUTE_STROKE_WIDTH = 8;
+var ROUTE_SELECT_WIDTH = 20;
 
 var HIGHLIGHT_STROKE_WIDTH = 30;
 var HIGHLIGHT_STROKE_COLOR = "yellow";
@@ -706,7 +707,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("d", path)
 		.attr("id", function(d) {return "road" + d.properties.id;})
 		.style("stroke", "#f00")
-		.style("stroke-width", ROUTE_STROKE_WIDTH)
+		.style("stroke-width", ROUTE_SELECT_WIDTH)
 		.style("stroke-linecap", "round")
 		.style("opacity", 0)
 		;
