@@ -2,6 +2,7 @@ var ROAD_COLOR = "grey";
 var ROAD_COLOR_BLOCKED = "#a00";
 var ROAD_NODES_COLOR = "grey";
 var ROAD_NODES_STROKE = "grey";
+var ROAD_NODES_SIZE = "4px";
 
 var ROUTE_COLOR = "yellow";
 var ROUTE_COLOR_COMPLETE = "green";
@@ -766,7 +767,7 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			.attr("id", function(d) {return "roadnode" + d.properties.id;})
 			.style("fill", ROAD_NODES_COLOR)
 			.style("stroke", ROAD_NODES_STROKE)
-			.style("stroke-width", "5px")
+			.style("stroke-width", ROAD_NODES_SIZE)
 			.style("stroke-linecap", "square")
 			.style("opacity", 1)
 			;
