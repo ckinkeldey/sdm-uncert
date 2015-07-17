@@ -163,13 +163,6 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});
 	}
 	
-	function setPattern() {
-		var patterns = ["pattern0", "pattern0", "pattern0", "pattern1", "pattern2"];
-		d3.select(this)
-		.style('stroke', function(d) {return "url(#" + patterns[5-d.properties.risk] + ")"})
-		;
-	}
-	
 	function setSketchy() {
 		var patterns = ["sketchy0", "sketchy0", "sketchy0", "sketchy1", "sketchy2"];
 		d3.select(this)
@@ -367,11 +360,12 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});			
 	}
 	
-//	function computeRisk(d) {
-//		var risk = d.properties.risk;
-//		var length = d.properties.length;
-//		return length / minLength * (5-risk)/5;
-//	}
+	function drawLinePattern(d) {
+		d3.select(this).style("stroke-dasharray", function(d) {
+			var dash = (5-d.properties.risk) * 3;
+			return [dash, 2*dash];
+		});
+	}
 	
 	var roaddata = topojson.feature(roaddata, roaddata.objects[roadfile]).features;
 	
@@ -475,144 +469,27 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("opacity", 1)
 			.each(drawIcon);
 	} else if (visualization == EXPLICIT_TEXTURE){
-		
-		var pattern = d3.select('svg').append('defs')
-		.append('pattern')
-		.attr({
-		  id: 'pattern0',
-		  patternUnits: 'userSpaceOnUse',
-		  x: 0,
-		  y: 0, 
-		  width: 200,
-		  height: 200
-		})
-		.append('image')
-		.attr({
-			"xlink:href": "images/pattern0.jpg",
-			x: 0,
-			y: 0, 
-		 	width: 200,
-		 	height:200
-		});	
-		
-		
-		d3.select('defs')
-		.append('pattern')
-		.attr({
-		  id: 'pattern1',
-		  patternUnits: 'userSpaceOnUse',
-		  x: 0,
-		  y: 0, 
-		  width: 100,
-		  height: 100
-		})
-		.append('image')
-		.attr({
-			"xlink:href": "images/pattern1.jpg",
-			x: 0,
-			y: 0, 
-		 	width: 100,
-		 	height:100
-		});	
-		
-		d3.select('defs')
-		.append('pattern')
-		.attr({
-		  id: 'pattern2',
-		  patternUnits: 'userSpaceOnUse',
-		  x: 0,
-		  y: 0, 
-		  width: 50,
-		  height: 50
-		})
-		.append('image')
-		.attr({
-			"xlink:href": "images/pattern2.jpg",
-			x: 0,
-			y: 0, 
-		 	width: 50,
-		 	height:50
-		});	
-		
-		
-//		var pattern = d3.select('svg').append('defs')
-//		.append('pattern')
-//		.attr({
-//		  id: 'pattern0',
-//		  patternUnits: 'userSpaceOnUse',
-//		  x: 0,
-//		  y: 0, 
-//		  width: 10,
-//		  height:10
-//		});
-		
-		
-//		pattern.append('rect')
-//		.attr({
-//		 	width: 10,
-//		 	height:10,
-//		 	fill:"#fff"
-//		});
-//		
-//		pattern.append('circle')
-//		.attr({
-//		 	width: 1,
-//		 	height:1,
-//		 	fill:"#000"
-//		});	
-		
-		var defs = d3.select('svg').append('defs');
-	    var g = defs.append("pattern")
-	        .attr('id', 'hash')
-	        .attr('patternUnits', 'userSpaceOnUse')
-	        .attr('width', '25')
-	        .attr('height', '25')
-	        .attr("x", 0).attr("y", 0)
-	        .append("g").style("fill", "none")
-	        .style("stroke", "black")
-	        .style("stroke-width", "1px");
-	    g.append("path").attr("d", "M0,0 l25,25");
-	    g.append("path").attr("d", "M25,0 l-25,25");
-	    
-//		var patternG = pattern
-//		.append('path')
-//		.attr({
-//			d: 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2',
-//			stroke: 'white',
-//			'stroke-width': "1px",
-//				x: 0,
-//				y: 0, 
-//			 	width: 40,
-//			 	height:40
-//		});	
-		
-//		roads = roadlayer.selectAll("path")
-//		.data(roaddata)
-//		.enter()
-//		.append("path")
-//		.attr("d", path)
-//		.style("stroke", "white")
-//		.style("stroke-width", ROUTE_STROKE_WIDTH)
-//		.style("stroke-linecap", "round")
-//		;
-		
-		roadlayer.selectAll("path")
+		roads = roadlayer.selectAll("path.bg")
 		.data(roaddata)
 		.enter()
 		.append("path")
 		.attr("d", path)
+		.attr("id", function(d) {return "bg" + d.properties.id;})
+		.style("stroke", "grey")
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
-		.style("stroke-linecap", "round")
-		.each(setPattern)
-//		.style("stroke", "url(#pattern1)")
 		;
 		
-//		svg.append('circle')
-//		.attr("cx", 100)
-//		.attr("cy", 100)
-//		.attr("r", 50)
-//		.style("fill", "url(#pattern0)")
-//		;
+		roadlayer.selectAll("path.dashing")
+		.data(roaddata)
+		.enter()
+		.append("path")
+		.attr("d", path)
+		.attr("id", function(d) {return "road" + d.properties.id;})
+		.style("stroke", "white")
+		.style("stroke-width", ROUTE_STROKE_WIDTH)
+		.style("stroke-linecap", "square")
+		.each(drawLinePattern)
+		;
 		
 	} else if (visualization == EXPLICIT_TEXTURE_M){
 		var pattern = d3.select('svg').append('defs')
@@ -803,20 +680,20 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 	;
 	
-	if (visualization == WITHOUT) {
-		var riskCenter = [4.85,3];
-		pointlayer.selectAll("circle")
-		.data(abdata)
-		.enter()
-		.append("circle")
-		.attr("id", function(d) {return "p" + d.properties.id;})
-		.attr("cx", function(d) {return projection(riskCenter)[0];})
-		.attr("cy",  function(d) {return projection(riskCenter)[1];})
-		.attr("r", "12px")
-		.style("fill", START_END_POINTS_COLOR)
-		.style("stroke", "red")
-		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
-	}
+//	if (visualization == WITHOUT) {
+//		var riskCenter = [4.85,3];
+//		pointlayer.selectAll("circle")
+//		.data(abdata)
+//		.enter()
+//		.append("circle")
+//		.attr("id", function(d) {return "p" + d.properties.id;})
+//		.attr("cx", function(d) {return projection(riskCenter)[0];})
+//		.attr("cy",  function(d) {return projection(riskCenter)[1];})
+//		.attr("r", "12px")
+//		.style("fill", START_END_POINTS_COLOR)
+//		.style("stroke", "red")
+//		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
+//	}
 	
 	var pointAx = d3.select("#p0").attr("cx");
 	var pointAy = d3.select("#p0").attr("cy");
