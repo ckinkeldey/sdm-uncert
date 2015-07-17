@@ -163,11 +163,23 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});
 	}
 	
-	function setSketchy() {
-		var patterns = ["sketchy0", "sketchy0", "sketchy0", "sketchy1", "sketchy2"];
-		d3.select(this)
-		.style('stroke', function(d) {return "url(#" + patterns[5-d.properties.risk] + ")"})
+	function drawSketchy() {
+		var sketchyrect = 
+		d3.sketchy.rect()
+		.height(50)
+		.width(50)
+		.x(function(d) {
+			var coords = d.geometry.coordinates;
+			return coords[0][0];
+		})
+		.y(function(d) {
+			var coords = d.geometry.coordinates;
+			return coords[0][1];
+		})
+		.strokeWidth(10)
+		.jostle(5)
 		;
+
 	}
 
 	function changeBlocked(roads) {
@@ -367,6 +379,19 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});
 	}
 	
+	var jitter = ROUTE_STROKE_WIDTH;
+	
+	var sketchyLineFunction = d3.svg.line()
+	.x(function(d) {
+		var coords = projection(d);
+		return coords[0] + jitter * (Math.random() - .5);// - margin.left;
+	})
+	.y(function(d) {
+		var coords = projection(d);
+		return coords[1] + jitter * (Math.random() - .5);// - margin.top;
+	})
+	.interpolate('basis');
+	
 	var roaddata = topojson.feature(roaddata, roaddata.objects[roadfile]).features;
 	
 	// layer for highlighting selections
@@ -492,76 +517,56 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		;
 		
 	} else if (visualization == EXPLICIT_TEXTURE_M){
-		var pattern = d3.select('svg').append('defs')
-		.append('pattern')
-		.attr({
-		  id: 'sketchy0',
-		  patternUnits: 'userSpaceOnUse',
-		  x: 0,
-		  y: 0, 
-		  width: 200,
-		  height: 200
-		})
-		.append('image')
-		.attr({
-			"xlink:href": "images/sketchy0.jpg",
-			x: 0,
-			y: 0, 
-		 	width: 200,
-		 	height:200
-		});	
+		roads = roadlayer.selectAll("path.bg")
+		.data(roaddata)
+		.enter()
+		.append("path")
+		.attr("d", path)
+		.attr("id", function(d) {return "bg" + d.properties.id;})
+		.style("stroke", "white")
+		.style("stroke-width", ROUTE_STROKE_WIDTH)
+		;
 		
+		var roaddataExt = addPoints(roaddata);
 		
-		d3.select('defs')
-		.append('pattern')
-		.attr({
-		  id: 'sketchy1',
-		  patternUnits: 'userSpaceOnUse',
-		  x: 0,
-		  y: 0, 
-		  width: 100,
-		  height: 100
-		})
-		.append('image')
-		.attr({
-			"xlink:href": "images/sketchy1.jpg",
-			x: 0,
-			y: 0, 
-		 	width: 100,
-		 	height:100
-		});	
-		
-		d3.select('defs')
-		.append('pattern')
-		.attr({
-		  id: 'sketchy2',
-		  patternUnits: 'userSpaceOnUse',
-		  x: 0,
-		  y: 0, 
-		  width: 50,
-		  height: 50
-		})
-		.append('image')
-		.attr({
-			"xlink:href": "images/sketchy2.jpg",
-			x: 0,
-			y: 0, 
-		 	width: 50,
-		 	height:50
-		});	
-		roads = roadlayer.selectAll("path")
+		for (var i = 0; i < 5; i++) {
+			roadlayer.selectAll("path.sketchy" + i)
 			.data(roaddata)
 			.enter()
 			.append("path")
-			.attr("d", path)
-			// .attr("id", function(d) {return "road" + d.properties.id;})
-			.style("stroke-width", ROUTE_STROKE_WIDTH)
-			.style("stroke-linecap", "round")
-			.style("stroke", "grey")
-			.style("opacity", 1)
-			.each(setSketchy);
+			.attr("d", function(d) {
+				return sketchyLineFunction(d.geometry.coordinates)
+			})
+	//		// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-width", 1)
+	//		.style("stroke-linecap", "round")
+			.style("stroke", "black")
+			.style("fill", "none")
+	//		.style("opacity", 1)
+	//		.each(drawSketchy)
+			;
+		}
 		
-	}else if (visualization == IMPLICIT_SYMBOLS){
+		for (var i = 0; i < 1; i++) {
+			roadlayer.selectAll("path.sketchy.g" + i)
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", function(d) {
+				return sketchyLineFunction(d.geometry.coordinates)
+			})
+	//		// .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-width", 1)
+	//		.style("stroke-linecap", "round")
+			.style("stroke", "grey")
+			.style("fill", "none")
+	//		.style("opacity", 1)
+	//		.each(drawSketchy)
+			;
+		}
+		
+		
+	} else if (visualization == IMPLICIT_SYMBOLS){
 		// animated symbols
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
@@ -575,6 +580,24 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.each(drawIcon)
 			;
 			setInterval(changeSymbol, 500);
+	}
+	
+	function addPoints(pointdata) {
+		var newData = [];
+		for (var i = 0; i < pointdata.length; i++) {
+			var first = pointdata[i].geometry.coordinates[0];
+			var last = pointdata[i].geometry.coordinates[1];
+			var dx = last[0] - first[0];
+			var dy = last[1] - first[1];
+			var newCoords = [];
+			for (var k = 0; k < 10; k++) {
+				var newX = first[0] + k * dx/10;
+				var newY = first[1] + k * dy/10;
+				newCoords.push([newX, newY]);
+			}
+			pointdata[i].geometry.coordinates = newCoords;
+		}
+//		pointdata.geometry.coordinates = newData;
 	}
 	
 	// invisible layer for selection events
