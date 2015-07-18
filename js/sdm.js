@@ -186,8 +186,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		roads
 		.transition()
 		.duration(250)
-		.style(
-				"stroke",
+		.style("stroke",
 				function(d) {
 					var id = d.properties.id;
 					if (routes && route0.indexOf(id) == -1 && route1.indexOf(id) == -1) {
@@ -374,22 +373,36 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	
 	function drawLinePattern(d) {
 		d3.select(this).style("stroke-dasharray", function(d) {
-			var dash = (5-d.properties.risk) * 3;
-			return [dash, 2*dash];
+			var dash = (Math.pow(2,5-d.properties.risk));
+			return [dash, dash];
 		});
+	}
+	
+	function computeSketchyCoords(coords, risk) {
+		var sketchy = [];
+		for (var i = 0; i < coords.length; i++) {
+			var projected = projection(coords[i]);
+			var jitter = risk/4 * ROUTE_STROKE_WIDTH;
+			var x = projected[0] + jitter * (Math.random() - .5);
+			var y = projected[1] + jitter * (Math.random() - .5);
+			sketchy.push([x,y]);
+		}
+		return sketchy;
 	}
 	
 	
 	var sketchyLineFunction = d3.svg.line()
 		.x(function(d) {
-			var coords = projection(d);
-			var jitter = 1 * ROUTE_STROKE_WIDTH;
-			return coords[0] + jitter * (Math.random() - .5);// - margin.left;
+			return d[0];
+//			var coords = projection(d);
+//			var jitter = 1 * ROUTE_STROKE_WIDTH;
+//			return coords[0] + jitter * (Math.random() - .5);// - margin.left;
 		})
 		.y(function(d) {
-			var coords = projection(d);
-			var jitter = 1 * ROUTE_STROKE_WIDTH;
-			return coords[1] + jitter * (Math.random() - .5);// - margin.top;
+			return d[1];
+//			var coords = projection(d);
+//			var jitter = 1 * ROUTE_STROKE_WIDTH;
+//			return coords[1] + jitter * (Math.random() - .5);// - margin.top;
 		})
 		.interpolate('basis');
 	
@@ -502,7 +515,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.append("path")
 		.attr("d", path)
 		.attr("id", function(d) {return "bg" + d.properties.id;})
-		.style("stroke", "grey")
+		.style("stroke", SYMBOL_COLOR)
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		;
 		
@@ -514,7 +527,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("id", function(d) {return "road" + d.properties.id;})
 		.style("stroke", "white")
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
-		.style("stroke-linecap", "square")
+		.style("stroke-linecap", "butt")
 		.each(drawLinePattern)
 		;
 		
@@ -525,51 +538,62 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.append("path")
 		.attr("d", path)
 		.attr("id", function(d) {return "bg" + d.properties.id;})
-		.style("stroke", "grey")
+		.style("stroke", "white")
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		;
 		
 		var roaddataExt = addPoints(roaddata);
+		var sketchyCoords = [];
 		
-		for (var i = 0; i < 10; i++) {
-			roadlayer.selectAll("path.sketchy" + i)
+
+		for (var a = 0; a < 50; a++) {
+			roadlayer.selectAll("path.sketchy.g" + a)
 			.data(roaddata)
 			.enter()
 			.append("path")
 			.attr("d", function(d) {
-				var risk = 5 - d.properties.risk;
-				return sketchyLineFunction(d.geometry.coordinates, risk)
+				var risk = Math.pow(2,d.properties.risk);
+				if (a % risk == 0) {
+					sketchyCoords = computeSketchyCoords(d.geometry.coordinates, 5);
+					return sketchyLineFunction(sketchyCoords);
+				}
+				return "";
 			})
 	//		// .attr("id", function(d) {return "road" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
-			.style("stroke", "#aaa")
+			.style("stroke", "#222")
+			.style("stroke-dasharray", (4,4))
 			.style("fill", "none")
-	//		.style("opacity", 1)
-	//		.each(drawSketchy)
+			.style("opacity", 1)
 			;
 		}
 		
-//		for (var i = 0; i < 5; i++) {
-//			roadlayer.selectAll("path.sketchy.g" + i)
+//		for (var a = 0; a < 3; a++) {
+//			roadlayer.selectAll("path.sketchy" + a)
 //			.data(roaddata)
 //			.enter()
 //			.append("path")
 //			.attr("d", function(d) {
-//				var risk = 5-d.properties.risk;
-//				return sketchyLineFunction(d.geometry.coordinates, risk)
+//				console.log(d.properties.risk);
+//				var risk = Math.pow(2,d.properties.risk);
+//				if (a % risk == 0) {
+//					return "";
+//				}
+//				sketchyCoords = computeSketchyCoords(d.geometry.coordinates, 5);
+//				return sketchyLineFunction(sketchyCoords);
 //			})
-//	//		// .attr("id", function(d) {return "road" + d.properties.id;})
+//			 .attr("id", function(d) {return "road" + d.properties.id;})
 //			.style("stroke-width", 1)
 //	//		.style("stroke-linecap", "round")
-//			.style("stroke", "#ccc")
+//			.style("stroke", "white")
+//			.style("stroke-width", 1)
+//			.style("stroke-dasharray", (2*Math.random(),2*Math.random(),2*Math.random()))
 //			.style("fill", "none")
-//	//		.style("opacity", 1)
-//	//		.each(drawSketchy)
+//			.style("opacity", 1)
 //			;
 //		}
-		
-		
+	
 	} else if (visualization == IMPLICIT_SYMBOLS){
 		// animated symbols
 		roads = roadlayer.selectAll("path")
