@@ -101,6 +101,7 @@ rasterlayer.append("image")
 	.attr("height", height + "px")
 	.attr("x", rasterX + "px")
 	.attr("y", rasterY + "px")
+	.attr("id", "map")
 	.attr("xlink:href", backgroundPath);
 
 var roads, roadNodes, highlight, points;

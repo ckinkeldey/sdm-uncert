@@ -1,9 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+	<meta charset="utf-8">
 <!-- 		<meta http-equiv="refresh" content="0; url=explicit-color.html" /> -->
-<title>Spatial decision making study</title>
+	<title>Spatial decision making study</title>
+	<style>
+		path {
+			stroke-width: 10px;
+			stroke-linecap: round;
+		}
+		div {
+			float: left;
+		}
+		text {
+			font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
+			text-anchor: middle;
+			pointer-events: none;
+			text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px
+				0 #fff;
+		}
+		.invisible {
+			display: none;
+		}
+	</style>
+	<script src="lib/d3.js"></script>
+	<script src="lib/topojson.js"></script>
+	<script src="lib/jquery.js"></script>
+	<script src="lib/toxiclibs.js"></script>
 </head>
 <body>
 	<h3>Welcome!</h3>
@@ -12,7 +35,10 @@
 			is the risk that roads may be blocked due to the flooding. You are an
 			emergency responder at location “A” with important supplies that have
 			to be delivered to location “B” as fast as possible.</p>
+		<p>Try the example below to learn how the route drawing tool works. 
+		Press the "submit" button to start the actual study.</p>
 	</div>
+	<div id="map"></div>
 	<div id="buttons" style="clear: both;">
 		<input id="submitButton" type="button"
 			value="Submit" onclick="next();" style="float: right;" />
