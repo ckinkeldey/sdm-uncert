@@ -18,9 +18,13 @@
 				float:left;
 			}
 		</style>
+		<script src="lib/d3.js"></script>
+		<script src="lib/topojson.js"></script>
+		<script src="lib/toxiclibs.js"></script>
 	</head>
 	<body>
 		<h3>Please draw a route from A to B and press "submit".</h3>
+		<div id="map"></div>
 		<script>
 			var visualization = 6;
 			var pointsABname = "AB1";
@@ -28,9 +32,6 @@
 			var risks = [0, 0.61, 0.41, 0.21, 0.01];
 			var routes = false;
 		</script>
-		<script src="lib/d3.js"></script>
-		<script src="lib/topojson.js"></script>
-		<script src="lib/toxiclibs.js"></script>
 		<script src="js/sdm.js"></script>
 		<div id="buttons" style="clear:both;">
 			<input id="deleteButton" type="button" value="Delete route" onclick="deleteRoute();" />

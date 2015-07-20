@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Spatial decision making study</title>
+		<script src="lib/jquery.js"></script>
+	</head>
+	<body>
+	<h2>Spatial decision making study</h2>
+	<div id="mainpage" style="width:1000px;height:800px"></div>
+	<script>
+			$(function(){
+			      $("#mainpage").load("explicit-color.html"); 
+			});
+			setTimeout(function() {
+					$("#mainpage").load("explicit-color-m.html"); 
+			}
+			, 5000);
+			
+		</script>
+	</body>
+</html>

@@ -86,7 +86,7 @@ var projection = d3.geo.mercator()
 
 var path = d3.geo.path().projection(projection);
 
-var svg = d3.select("body").append("div").append("svg").attr("width", width).attr("height", height);
+var svg = d3.select("#map").append("svg").attr("width", width).attr("height", height);
 
 var rasterlayer = svg.append("g").attr("id", "map");
 var highlightlayer = svg.append("g").attr("id", "highlight");
@@ -538,7 +538,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.append("path")
 		.attr("d", path)
 		.attr("id", function(d) {return "bg" + d.properties.id;})
-		.style("stroke", "grey")
+		.style("stroke", "white")
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		;
 		
@@ -546,7 +546,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var sketchyCoords = [];
 		
 
-		for (var a = 0; a < 50; a++) {
+		for (var a = 0; a < 25; a++) {
 			roadlayer.selectAll("path.sketchy.g" + a)
 			.data(roaddata)
 			.enter()
