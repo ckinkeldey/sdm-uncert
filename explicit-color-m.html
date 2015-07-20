@@ -8,20 +8,41 @@
 				stroke-width: 10px;
 				stroke-linecap: round;
 			}
+			div {
+				float: left;
+			}
 			text {
 				font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
 				text-anchor: middle;
 				pointer-events: none;
-				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px
+					0 #fff;
 			}
-			div {
-				float:left;
+			.invisible {
+				display: none;
 			}
 		</style>
+		<script src="lib/d3.js"></script>
+		<script src="lib/topojson.js"></script>
+		<script src="lib/jquery.js"></script>
+		<script src="lib/toxiclibs.js"></script>
 	</head>
 	<body>
 		<h3>Please draw a route from A to B and press "submit".</h3>
 		<div id="map"></div>
+		<div id="legend" style="float:left; margin-left: 50px;">
+			<img src="images/legend_red.png" width="100px">
+		</div>
+		<div id="buttons" style="clear: both;">
+		<input id="deleteButton" type="button" value="Delete route"
+			onclick="deleteRoute();" /> 
+		<input id="submitButton" type="button"
+			value="Submit" onclick="next();" style="float: right;" />
+		</div>
+		<div id="textInfo" style="clear: both;">
+			<p id="lengthTextfield">Route length: 0 m</p>
+			<p id="riskTextfield">Not blocked:</p>
+		</div>
 		<script>
 			var visualization = 2;
 			var pointsABname = "AB1";
@@ -29,12 +50,6 @@
 			var risks = [0, 0.2, 0.10, 0.04, 0.025];
 			var routes = false;
 		</script>
-		<script src="lib/d3.js"></script>
-		<script src="lib/topojson.js"></script>
-		<script src="lib/toxiclibs.js"></script>
 		<script src="js/sdm.js"></script>
-		<div id="legend" style="float:left; margin-left: 50px;">
-			<img src="images/legend_red.png" width="100px">
-		</div>
 	</body>
 </html>

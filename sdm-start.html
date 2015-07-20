@@ -7,9 +7,23 @@
 </head>
 <body>
 	<h3>Welcome!</h3>
-	<p>A flooding event occurred in the area shown on the map. 
-	There is the risk that roads may be blocked due to the flooding. 
-	You are an emergency responder at location “A” with important supplies that have to be delivered to location “B” as fast as possible. 
-	</p>
+	<div id="introtext">
+		<p>A flooding event occurred in the area shown on the map. There
+			is the risk that roads may be blocked due to the flooding. You are an
+			emergency responder at location “A” with important supplies that have
+			to be delivered to location “B” as fast as possible.</p>
+	</div>
+	<div id="buttons" style="clear: both;">
+		<input id="submitButton" type="button"
+			value="Submit" onclick="next();" style="float: right;" />
+	</div>
+	<script>
+		var visualization = 0;
+		var pointsABname = "AB1";
+		var A_B_LABEL_POSITION = [ -30, 0, 25, -5 ];
+		var risks = [ 0, 0.61, 0.41, 0.21, 0.01 ];
+		var routes = false;
+	</script>
+	<script src="js/sdm.js"></script>
 </body>
-</html>	
+</html>
