@@ -538,7 +538,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.append("path")
 		.attr("d", path)
 		.attr("id", function(d) {return "bg" + d.properties.id;})
-		.style("stroke", "white")
+		.style("stroke", "grey")
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		;
 		
@@ -554,7 +554,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.attr("d", function(d) {
 				var risk = Math.pow(2,d.properties.risk);
 				if (a % risk == 0) {
-					sketchyCoords = computeSketchyCoords(d.geometry.coordinates, 5);
+					sketchyCoords = computeSketchyCoords(d.geometry.coordinates, 4);
 					return sketchyLineFunction(sketchyCoords);
 				}
 				return "";
@@ -562,7 +562,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	//		// .attr("id", function(d) {return "road" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
-			.style("stroke", "#222")
+			.style("stroke", "red")
 			.style("stroke-dasharray", (4,4))
 			.style("fill", "none")
 			.style("opacity", 1)
