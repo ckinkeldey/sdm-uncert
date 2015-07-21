@@ -1,46 +1,44 @@
-	var scenarios = ["explicit-color.html", "explicit-color-m.html",
-	                 "explicit-symbol.html", "explicit-symbol-m.html",
-	                 "explicit-texture.html", "explicit-texture-m.html"
-	                 ];
-	if (random) {
-		shuffle(scenarios);
-	}
-	var i = 0;
-	$("#deleteButton").addClass("invisible");
-	$("#textInfo").addClass("invisible");
-	$(function(){
-	      $("#mainpage").load("sdm-start.html");
-	});
-		
-	function next() {
-		if (i < scenarios.length) {
-			$("#deleteButton").removeClass("invisible");
-			$("#textInfo").removeClass("invisible");
-			$("#mainpage").load(scenarios[i++]); 
-		} else {
-			$("#deleteButton").addClass("invisible");
-			$("#submitButton").addClass("invisible");
-			$("#textInfo").addClass("invisible");
-			$("#mainpage").load("sdm-end.html"); 
+var scenarios = [ "explicit-color.html", "explicit-color-m.html",
+		"explicit-symbol.html", "explicit-symbol-m.html",
+		"explicit-texture.html", "explicit-texture-m.html" ];
+if (random) {
+	shuffle(scenarios);
+}
+var i = 0;
+$("#deleteButton").addClass("invisible");
+$("#textInfo").addClass("invisible");
+$(function() {
+	$("#mainpage").load("sdm-start.html");
+});
+
+function next() {
+	if (i < scenarios.length) {
+		if (i > 0) {
+			submitRoute();
 		}
+		$("#deleteButton").removeClass("invisible");
+		$("#textInfo").removeClass("invisible");
+		$("#mainpage").load(scenarios[i++]);
+	} else {
+		$("#deleteButton").addClass("invisible");
+		$("#submitButton").addClass("invisible");
+		$("#textInfo").addClass("invisible");
+		$("#mainpage").load("sdm-end.html");
 	}
-	
-	function shuffle(array) {
-		  var currentIndex = array.length, temporaryValue, randomIndex ;
+}
 
-		  // While there remain elements to shuffle...
-		  while (0 !== currentIndex) {
+function shuffle(array) {
+	var currentIndex = array.length, temporaryValue, randomIndex;
 
-		    // Pick a remaining element...
-		    randomIndex = Math.floor(Math.random() * currentIndex);
-		    currentIndex -= 1;
+	while (0 !== currentIndex) {
 
-		    // And swap it with the current element.
-		    temporaryValue = array[currentIndex];
-		    array[currentIndex] = array[randomIndex];
-		    array[randomIndex] = temporaryValue;
-		  }
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
 
-		  return array;
-		}
-	
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
+}

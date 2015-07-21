@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-		<meta charset="utf-8">
-		<title>Spatial decision making study</title>
-		<style>
-			path {
-				stroke-width: 10px;
-				stroke-linecap: round;
-			}
-			div {
-				float: left;
-			}
-			text {
-				font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
-				text-anchor: middle;
-				pointer-events: none;
-				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px
-					0 #fff;
-			}
-			.invisible {
-				display: none;
-			}
-		</style>
-		<script src="lib/d3.js"></script>
-		<script src="lib/topojson.js"></script>
-		<script src="lib/jquery.js"></script>
-		<script src="lib/toxiclibs.js"></script>
+	<meta charset="utf-8">
+	<title>Spatial decision making study</title>
+	<style>
+		path {
+			stroke-width: 10px;
+			stroke-linecap: round;
+		}
+		div {
+			float: left;
+		}
+		text {
+			font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
+			text-anchor: middle;
+			pointer-events: none;
+			text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px
+				0 #fff;
+		}
+		.invisible {
+			display: none;
+		}
+	</style>
 </head>
-<body>
+<body onload="startTime()">
 	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
@@ -50,6 +46,11 @@
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 	</script>
+	<script src="lib/d3.js"></script>
+	<script src="lib/topojson.js"></script>
+	<script src="lib/jquery.js"></script>
+	<script src="lib/toxiclibs.js"></script>
 	<script src="js/sdm.js"></script>
+<!-- 	<script>startTime()</script> -->
 </body>
 </html>

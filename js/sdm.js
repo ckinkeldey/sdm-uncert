@@ -62,7 +62,12 @@ var routeLength = 0;
 var routeRisk = 1;
 var probNotBlocked = 1;
 
-var startTime = new Date().getTime();
+var startTime;
+function startTime() {
+	startTime = new Date().getTime();
+//	alert("start time: " + startTime)
+}
+
 var animCounter = 0;
 
 var leftMB = false;
@@ -547,7 +552,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var sketchyCoords = [];
 		
 
-		for (var a = 0; a < 25; a++) {
+		for (var a = 0; a < 50; a++) {
 			roadlayer.selectAll("path.sketchy.g" + a)
 			.data(roaddata)
 			.enter()
@@ -563,37 +568,37 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	//		// .attr("id", function(d) {return "road" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
-			.style("stroke", "red")
+			.style("stroke", "#333")
 			.style("stroke-dasharray", (4,4))
 			.style("fill", "none")
 			.style("opacity", 1)
 			;
 		}
 		
-//		for (var a = 0; a < 3; a++) {
-//			roadlayer.selectAll("path.sketchy" + a)
-//			.data(roaddata)
-//			.enter()
-//			.append("path")
-//			.attr("d", function(d) {
-//				console.log(d.properties.risk);
-//				var risk = Math.pow(2,d.properties.risk);
-//				if (a % risk == 0) {
-//					return "";
-//				}
-//				sketchyCoords = computeSketchyCoords(d.geometry.coordinates, 5);
-//				return sketchyLineFunction(sketchyCoords);
-//			})
-//			 .attr("id", function(d) {return "road" + d.properties.id;})
-//			.style("stroke-width", 1)
-//	//		.style("stroke-linecap", "round")
-//			.style("stroke", "white")
-//			.style("stroke-width", 1)
-//			.style("stroke-dasharray", (2*Math.random(),2*Math.random(),2*Math.random()))
-//			.style("fill", "none")
-//			.style("opacity", 1)
-//			;
-//		}
+		for (var a = 0; a < 3; a++) {
+			roadlayer.selectAll("path.sketchy" + a)
+			.data(roaddata)
+			.enter()
+			.append("path")
+			.attr("d", function(d) {
+				console.log(d.properties.risk);
+				var risk = Math.pow(2,d.properties.risk);
+				if (a % risk == 0) {
+					return "";
+				}
+				sketchyCoords = computeSketchyCoords(d.geometry.coordinates, 5);
+				return sketchyLineFunction(sketchyCoords);
+			})
+			 .attr("id", function(d) {return "road" + d.properties.id;})
+			.style("stroke-width", 1)
+	//		.style("stroke-linecap", "round")
+			.style("stroke", "white")
+			.style("stroke-width", 1)
+			.style("stroke-dasharray", (2*Math.random(),2*Math.random(),2*Math.random()))
+			.style("fill", "none")
+			.style("opacity", 1)
+			;
+		}
 	
 	} else if (visualization == IMPLICIT_SYMBOLS){
 		// animated symbols
@@ -938,19 +943,24 @@ function deleteRoute() {
 }
 
 function submitRoute() {
+	var alertString = "";
 	var overalltime = (new Date().getTime() - startTime)/1000;
 	console.log("final route length: " + routeLength);
-	console.log("time: " + overalltime + " s.");
+	alertString += "time: " + overalltime + " s.\n";
 	var probability = Math.round(100*probNotBlocked)/100;
 	console.log("overall prob for not blocked: " + probability);
 	var displayString = "p(not blocked): " + probability;
-	var decision = Math.random() > probNotBlocked ? alert(displayString + " -> blocked!") : alert(displayString + " -> not blocked!");
+	var decision = Math.random() > probNotBlocked ? 
+			displayString + " -> blocked!" : displayString + " -> not blocked!";
+	alertString += decision + "\n";
 	var routeline = d3.svg.line()
     .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
     .y(function(d,i) { return projection.invert([route[i].x, route[i].y])[1]; });
-	console.log("route: " + routeline(route));
+	alertString += "route: " + routeline(route) + "\n";
 	var json_lines = JSON.stringify(routeline(route));
 	console.log("json: " + json_lines);
+	
+	alert(alertString);
 	
 	var mydata = "amt_id=2&timestamp=4634&pctime="+overalltime+"&scenario_id=0" +
 	"&coords=1,2,3,4,6,7,7&total_risk=0&distance="+routeLength+"&outcome=0";
