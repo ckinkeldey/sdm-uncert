@@ -20,6 +20,7 @@ function next() {
 		$("#textInfo").removeClass("invisible");
 		$("#mainpage").load(scenarios[i++]);
 	} else {
+		submitRoute();
 		$("#deleteButton").addClass("invisible");
 		$("#submitButton").addClass("invisible");
 		$("#textInfo").addClass("invisible");
