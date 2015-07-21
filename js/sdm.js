@@ -62,9 +62,9 @@ var routeLength = 0;
 var routeRisk = 1;
 var probNotBlocked = 1;
 
-var startTime;
+var time;
 function startTime() {
-	startTime = new Date().getTime();
+	time = new Date().getTime();
 //	alert("start time: " + startTime)
 }
 
@@ -365,34 +365,14 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});
 	}
 	
-	function computeSketchyCoords(coords, risk) {
-		var sketchy = [];
-		for (var i = 0; i < coords.length; i++) {
-			var projected = projection(coords[i]);
-			var jitter = risk/4 * ROUTE_STROKE_WIDTH;
-			var x = projected[0] + jitter * (Math.random() - .5);
-			var y = projected[1] + jitter * (Math.random() - .5);
-			sketchy.push([x,y]);
-		}
-		return sketchy;
-	}
-	
-	
 	var sketchyLineFunction = d3.svg.line()
-		.x(function(d) {
-			return d[0];
-//			var coords = projection(d);
-//			var jitter = 1 * ROUTE_STROKE_WIDTH;
-//			return coords[0] + jitter * (Math.random() - .5);// - margin.left;
-		})
-		.y(function(d) {
-			return d[1];
-//			var coords = projection(d);
-//			var jitter = 1 * ROUTE_STROKE_WIDTH;
-//			return coords[1] + jitter * (Math.random() - .5);// - margin.top;
-		})
-		.interpolate('basis');
-	
+	.x(function(d) {
+		return d[0];
+	})
+	.y(function(d) {
+		return d[1];
+	})
+	.interpolate('basis');
 	
 	var roaddata = topojson.feature(roaddata, roaddata.objects[roadfile]).features;
 	
@@ -529,12 +509,10 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		;
 		
-		var roaddataExt = addPoints(roaddata);
-		var sketchyCoords = [];
-		
+//		addPoints(roaddata);
 
 		for (var a = 0; a < 50; a++) {
-			roadlayer.selectAll("path.sketchy.g" + a)
+			symbollayer.selectAll("path.sketchy.g" + a)
 			.data(roaddata)
 			.enter()
 			.append("path")
@@ -546,7 +524,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 				}
 				return "";
 			})
-	//		// .attr("id", function(d) {return "road" + d.properties.id;})
+			.attr("id", function(d) {return "sketchy" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
 			.style("stroke", "#333")
@@ -557,12 +535,12 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		}
 		
 		for (var a = 0; a < 3; a++) {
-			roadlayer.selectAll("path.sketchy" + a)
+			symbollayer.selectAll("path.sketchy" + a)
 			.data(roaddata)
 			.enter()
 			.append("path")
 			.attr("d", function(d) {
-				console.log(d.properties.risk);
+//				console.log(d.properties.risk);
 				var risk = Math.pow(2,d.properties.risk);
 				if (a % risk == 0) {
 					return "";
@@ -575,7 +553,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	//		.style("stroke-linecap", "round")
 			.style("stroke", "white")
 			.style("stroke-width", 1)
-			.style("stroke-dasharray", (2*Math.random(),2*Math.random(),2*Math.random()))
+			.style("stroke-dasharray", (5,5))
 			.style("fill", "none")
 			.style("opacity", 1)
 			;
@@ -598,22 +576,71 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	}
 	
 	function addPoints(pointdata) {
-		var newData = [];
 		for (var i = 0; i < pointdata.length; i++) {
-			var first = pointdata[i].geometry.coordinates[0];
-			var last = pointdata[i].geometry.coordinates[1];
-			var dx = last[0] - first[0];
-			var dy = last[1] - first[1];
-			var newCoords = [];
-			for (var k = 0; k < 10; k++) {
-				var newX = first[0] + k * dx/10;
-				var newY = first[1] + k * dy/10;
-				newCoords.push([newX, newY]);
+			if (pointdata[i].geometry.coordinates[0][0].length > 1) {
+				for (var j = 0; j < pointdata[i].geometry.coordinates[0].length;j++) {
+					var first = pointdata[i].geometry.coordinates[j][0];
+					var last = pointdata[i].geometry.coordinates[j][1];
+//					pointdata[i].geometry.coordinates[j] = createCoordsMulti(first, last);
+				}
+			} //if (pointdata[i].geometry.coordinates[0][0].length == 1) {
+			else {
+				var first = pointdata[i].geometry.coordinates[0];
+				var last = pointdata[i].geometry.coordinates[1];
+				pointdata[i].geometry.coordinates = createCoords(first, last);
 			}
-			pointdata[i].geometry.coordinates = newCoords;
 		}
 //		pointdata.geometry.coordinates = newData;
 	}
+	
+	function createCoordsMulti(first, last) {
+		var newCoords = createCoords(first, last);
+		var newPoints = [];
+		for (var i = 0; i < newCoords.length-1; i++) {
+			newPoints[i] = [newCoords[i], newCoords[i+1]];
+		}
+		return newPoints;
+	}
+	
+	function createCoords(first, last) {
+		var dx = last[0] - first[0];
+		var dy = last[1] - first[1];
+		var length = Math.sqrt(dx*dx+dy*dy);
+		var newCoords = [];
+		var numPoints = Math.round(5 * length / 0.609);
+		for (var k = 0; k < numPoints; k++) {
+			var newX = first[0] + k * dx/numPoints;
+			var newY = first[1] + k * dy/numPoints;
+			newCoords.push([newX, newY]);
+		}
+		return newCoords;
+	}
+	
+	
+	function computeSketchyCoords(coords, risk) {
+		var sketchy = [];
+		if (coords[0][0] instanceof Array) {
+			var sketchyCoords = [];
+			for (var i = 0; i < coords.length; i++) {
+				var sketchy = computeSketchyCoords(coords[i], risk);
+				sketchyCoords.push(sketchy[0]);
+				if (i == coords.length-1) {
+					sketchyCoords.push(sketchy[1]);
+				}
+			}
+			return sketchyCoords;
+		}
+		for (var i = 0; i < coords.length; i++) {
+			var projected = projection(coords[i]);
+			var jitter = risk/4 * ROUTE_STROKE_WIDTH;
+			var x = projected[0] + jitter * (Math.random() - .5);
+			var y = projected[1] + jitter * (Math.random() - .5);
+			sketchy.push([x,y]);
+		}
+		return sketchy;
+	}
+	
+	
 	
 	// invisible layer for selection events
 	selection = selectionlayer.selectAll("path")
@@ -925,7 +952,7 @@ function deleteRoute() {
 
 function submitRoute() {
 	var alertString = "";
-	var overalltime = (new Date().getTime() - startTime)/1000;
+	var overalltime = (new Date().getTime() - time)/1000;
 	alertString += "route length: " + routeLength + "\n";
 	alertString += "time: " + overalltime + " s.\n";
 	var probability = Math.round(100*probNotBlocked)/100;
@@ -934,12 +961,14 @@ function submitRoute() {
 	var decision = Math.random() > probNotBlocked ? 
 			displayString + " -> blocked!" : displayString + " -> not blocked!";
 	alertString += decision + "\n";
-	var routeline = d3.svg.line()
-    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
-    .y(function(d,i) { return projection.invert([route[i].x, route[i].y])[1]; });
-	alertString += "route: " + routeline(route) + "\n";
-	var json_lines = JSON.stringify(routeline(route));
-	console.log("json: " + json_lines);
+//	var routeline = d3.svg.line()
+//    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
+//    .y(function(d,i) { return projection.invert([route[i].x, route[i].y])[1]; });
+//	alertString += "route: " + routeline(route) + "\n";
+//	var json_lines = JSON.stringify(routeline(route));
+//	console.log("json: " + json_lines);
+	
+	console.log(getGeoJSON(route));
 	
 	alert(alertString);
 	
@@ -965,6 +994,19 @@ function submitRoute() {
 //                alert(thrownError);
 //            }
 //	});
+	
+	function getGeoJSON(route) {
+		var geojson = "{\n\"type\": \"FeatureCollection\",\n\"features\": [\n{\n\"type\": \"Feature\",\n\"properties\": {},\n"
+				+"\"geometry\": {\n"
+			    +"\"type\": \"LineString\",\n"
+			    +"\"coordinates\": [\n";
+			                        
+		for (var i = 0; i < route.length; i++) {
+			geojson += "["+route[i].x+","+route[i].y+"],\n";
+		}
+		geojson += "]}}]}";
+		return geojson;
+	}
 	
 }
 
