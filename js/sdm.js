@@ -169,25 +169,6 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});
 	}
 	
-//	function drawSketchy() {
-//		var sketchyrect = 
-//		d3.sketchy.rect()
-//		.height(50)
-//		.width(50)
-//		.x(function(d) {
-//			var coords = d.geometry.coordinates;
-//			return coords[0][0];
-//		})
-//		.y(function(d) {
-//			var coords = d.geometry.coordinates;
-//			return coords[0][1];
-//		})
-//		.strokeWidth(10)
-//		.jostle(5)
-//		;
-//
-//	}
-
 	function changeBlocked(roads) {
 		roads
 		.transition()
@@ -945,7 +926,7 @@ function deleteRoute() {
 function submitRoute() {
 	var alertString = "";
 	var overalltime = (new Date().getTime() - startTime)/1000;
-	console.log("final route length: " + routeLength);
+	alertString += "route length: " + routeLength + "\n";
 	alertString += "time: " + overalltime + " s.\n";
 	var probability = Math.round(100*probNotBlocked)/100;
 	console.log("overall prob for not blocked: " + probability);
