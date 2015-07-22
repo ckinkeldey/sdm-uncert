@@ -530,10 +530,13 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.attr("id", function(d) {return "sketchy" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
-			.style("stroke", function(d) {var risk = 5-d.properties.risk; })
+			.style("stroke", "red")
 			.style("stroke-dasharray", (4,4))
 			.style("fill", "none")
-			.style("opacity", 1)
+			.style("opacity", function(d) {
+//				var risk = 5-d.properties.risk;
+				return 1-(d.properties.risk/8);
+			})
 			;
 		}
 		
@@ -717,7 +720,12 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 		 var self = d3.select(this);
 		 var point = self[0][0].getPointAtLength(0);
 		 var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
-		 highlightEdge(thisPoint, currentEnd);
+		 var currentEndPoint = new toxi.geom.Vec2D(parseFloat(currentEnd.x), parseFloat(currentEnd.y));
+		 var selected = getEdge(thisPoint, currentEndPoint);
+		 if (isValid(selected) && isSimple(selected) 
+					&& !routeComplete) {
+				selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
+			}
 	 });
 	
 	roadnodes.on("mouseout", function() {
@@ -730,7 +738,7 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 	roadnodes.on("mousedown", function() {
 		leftMB = true;
 		var self = d3.select(this);
-		var id = self[0][0].id.replace(/\D/g,'');
+//		var id = self[0][0].id.replace(/\D/g,'');
 		var point = self[0][0].getPointAtLength(0);
 		var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
 		var selected = getEdge(thisPoint, currentEnd); 
@@ -809,7 +817,7 @@ function drawSegment(selected) {
 		 routeLength += segLength;
 		 var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
 		 probNotBlocked *= segProbNotBlocked;
-		 console.log("Length: " + segLength + " -> " + Math.pow(1 - segRisk, segLength / minLength))
+//		 console.log("Length: " + segLength + " -> " + Math.pow(1 - segRisk, segLength / minLength))
 		 routeRisk = 1 - probNotBlocked;
 	} else {
 		route.pop();
@@ -919,7 +927,7 @@ function notHighlightEdge(point0, point1) {
 
 function isEdge(p0, p1, edge) {
 	var start = projection(edge.geometry.coordinates[0]);
-	var end = projection(edge.geometry.coordinates[1]);
+	var end = projection(edge.geometry.coordinates[edge.geometry.coordinates.length-1]);
 	var startPoint = new toxi.geom.Vec2D(start[0], start[1]);
 	var endPoint = new toxi.geom.Vec2D(end[0], end[1]);
 	return ((isIdentical(p0, startPoint) && isIdentical(endPoint, p1))
