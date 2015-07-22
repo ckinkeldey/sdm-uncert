@@ -326,15 +326,17 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		});
 	}
 	
+	// radius = sqrt(A/PI)
 	function getCircleRadius(d) {
-		var radius = Math.sqrt((5-d.properties.risk)/Math.PI) * 8;
-//		console.log("radius: " + radius);
+		var factor = 5-d.properties.risk;
+		var radius = Math.sqrt(factor/Math.PI) * 8;
 		return radius;
 	}
 	
+	// width = sqrt(2*A)
 	function getSymbolSize(d) {
-		var symbolSize = visualization == EXPLICIT_SYMBOL || visualization == EXPLICIT_SYMBOL_M ? Math.sqrt(2*(5-d.properties.risk)) * 8 : SYMBOL_SIZE;
-//		console.log("symbol size: " + symbolSize);
+		var factor = 5-d.properties.risk;
+		var symbolSize = visualization == EXPLICIT_SYMBOL || visualization == EXPLICIT_SYMBOL_M ? Math.sqrt(2*factor) * 8 : SYMBOL_SIZE;
 		return symbolSize;
 	}
 	
@@ -510,7 +512,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.style("stroke-width", ROUTE_STROKE_WIDTH)
 		;
 		
-//		addPoints(roaddata);
+		addPoints(roaddata);
 
 		for (var a = 0; a < 50; a++) {
 			symbollayer.selectAll("path.sketchy.g" + a)
@@ -528,7 +530,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.attr("id", function(d) {return "sketchy" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
-			.style("stroke", "#333")
+			.style("stroke", "red")
 			.style("stroke-dasharray", (4,4))
 			.style("fill", "none")
 			.style("opacity", 1)
@@ -641,8 +643,6 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		return sketchy;
 	}
 	
-	
-	
 	// invisible layer for selection events
 	selection = selectionlayer.selectAll("path")
 		.data(roaddata)
@@ -742,21 +742,6 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.style("stroke", START_END_POINTS_STROKE_COLOR)
 		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 	;
-	
-//	if (visualization == WITHOUT) {
-//		var riskCenter = [4.85,3];
-//		pointlayer.selectAll("circle")
-//		.data(abdata)
-//		.enter()
-//		.append("circle")
-//		.attr("id", function(d) {return "p" + d.properties.id;})
-//		.attr("cx", function(d) {return projection(riskCenter)[0];})
-//		.attr("cy",  function(d) {return projection(riskCenter)[1];})
-//		.attr("r", "12px")
-//		.style("fill", START_END_POINTS_COLOR)
-//		.style("stroke", "red")
-//		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
-//	}
 	
 	var pointAx = d3.select("#p0").attr("cx");
 	var pointAy = d3.select("#p0").attr("cy");
