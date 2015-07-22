@@ -860,6 +860,7 @@ function drawSegment(selected) {
 	var segLength = parseFloat(selected.attr("length"));
 	var segRisk = parseFloat(risks[selected.attr("risk")]);
 	if (active == true) {
+		updateEndPoint(selected);
 		 route.push(currentEnd);
 		 routeLength += segLength;
 		 var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
@@ -867,6 +868,7 @@ function drawSegment(selected) {
 //		 console.log("Length: " + segLength + " -> " + Math.pow(1 - segRisk, segLength / minLength))
 		 routeRisk = 1 - probNotBlocked;
 	} else {
+		updateEndPoint(selected);
 		route.pop();
 		routeLength -= segLength;
 		var segProbNotBlocked = Math.pow(1 - segRisk, segLength / minLength);
@@ -877,7 +879,6 @@ function drawSegment(selected) {
 	// console.log("current route length: " + routeLength);
 	d3.select("#lengthTextfield").html("Route length: " + Math.round(routeLength) + " m");
 	d3.select("#riskTextfield").html("Not blocked: " + Math.round(100*probNotBlocked ) + "%");
-	updateEndPoint(selected);
 	
 	// color route if complete
 	if (isRouteComplete(selected)) {
