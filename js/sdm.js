@@ -61,6 +61,7 @@ var route = [];
 var routeLength = 0;
 var routeRisk = 1;
 var probNotBlocked = 1;
+var routeComplete = false;
 
 var time;
 function startTime() {
@@ -659,14 +660,11 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_highlight");
-		if (isValid(selected) && isSimple(selected)) {
-			// if (leftMB == true) {
-				// drawSegment(selected);
-			// } else {
-				selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
-			// }
+		if (isValid(selected) && isSimple(selected) 
+				&& !routeComplete) {
+			selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
 		}
-		console.log("part of route: " + isPartOfRoute(selected));
+//		console.log("part of route: " + isPartOfRoute(selected));
 	});	
 	
 	selection.on("mousedown", function() {
@@ -674,7 +672,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_highlight");
-		if (isValid(selected) && isSimple(selected)) {
+		if (isValid(selected) && isSimple(selected) && !routeComplete) {
 			drawSegment(selected);
 		}
 	});
@@ -821,10 +819,12 @@ function drawSegment(selected) {
 	
 	// color route if complete
 	if (isRouteComplete(selected)) {
+		routeComplete = true;
 		highlightlayer.selectAll("path")
 		.style("stroke", ROUTE_COLOR_COMPLETE);
 		d3.select("#submitButton").attr("disabled", null);
 	} else {
+		routeComplete = false;
 		highlightlayer.selectAll("path")
 		.style("stroke", ROUTE_COLOR);
 		d3.select("#submitButton").attr("disabled", "disabled");
@@ -942,6 +942,7 @@ function deleteRoute() {
 		.style("opacity", ROUTE_OPACITY_INACTIVE)
 		;
 	});
+	routeComplete = false;
 	routeLength = 0;
 	routeRisk = 0;
 	probNotBlocked = 1;
