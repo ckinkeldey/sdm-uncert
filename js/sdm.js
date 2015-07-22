@@ -3,6 +3,7 @@ var ROAD_COLOR_BLOCKED = "#a00";
 var ROAD_NODES_COLOR = "grey";
 var ROAD_NODES_STROKE = "grey";
 var ROAD_NODES_SIZE = "4px";
+var ROAD_SELECTION_NODES_SIZE = "20px";
 
 var ROUTE_COLOR = "yellow";
 var ROUTE_COLOR_COMPLETE = "green";
@@ -99,8 +100,10 @@ var highlightlayer = svg.append("g").attr("id", "highlight");
 var roadlayer = svg.append("g").attr("id", "roads");
 var symbollayer = svg.append("g").attr("id", "symbols");
 var pointlayer = svg.append("g").attr("id", "points");
-var selectionlayer = svg.append("g").attr("id", "selection");
 var roadnodeslayer = svg.append("g").attr("id", "roadnodes");
+
+var selectionlayer = svg.append("g").attr("id", "selection");
+var selectionnodeslayer = svg.append("g").attr("id", "selectionnodes");
 
 rasterlayer.append("image")
 	.attr("width", width + "px")
@@ -655,7 +658,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.attr("id", function(d) {return "road" + d.properties.id;})
 		.style("stroke", ROUTE_COLOR)
 		.style("stroke-width", ROUTE_SELECT_WIDTH)
-		.style("stroke-linecap", "round")
+		.style("stroke-linecap", "butt")
 		.style("opacity", 0)
 		;
 	
@@ -663,8 +666,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_highlight");
-		if (isValid(selected) && isSimple(selected) 
-				&& !routeComplete) {
+		if (isValid(selected) && isSimple(selected) && !routeComplete) {
 			selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
 		}
 //		console.log("part of route: " + isPartOfRoute(selected));
@@ -711,43 +713,87 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			.style("fill", ROAD_NODES_COLOR)
 			.style("stroke", ROAD_NODES_STROKE)
 			.style("stroke-width", ROAD_NODES_SIZE)
-			.style("stroke-linecap", "square")
+//			.style("stroke-linecap", "square")
 			.style("opacity", 1)
 			;
-			
+	
+//	var selectionnodes = selectionnodeslayer.selectAll("path")
+//		.data(roadnodesdata)
+//		.enter()
+//		.append("path")
+//		.attr("d", path)
+//		.attr("id", function(d) {return "selectionnode" + d.properties.id;})
+//		.style("fill", "red")
+//		.style("stroke", "red")
+//		.style("stroke-width", ROAD_SELECTION_NODES_SIZE)
+//		.style("stroke-linecap", "square")
+//		.style("opacity", .25)
+//		;
+	
+	var selectionnodes = selectionnodeslayer.selectAll("circle")
+		.data(roadnodesdata)
+		.enter()
+		.append("circle")
+		.attr("id", function(d) {return "selectionnode" + d.properties.id;})
+		.attr("cx", function(d) {return projection(d.geometry.coordinates)[0];})
+		.attr("cy",  function(d) {return projection(d.geometry.coordinates)[1];})
+		.attr("r", 10)
+		.style("fill", "red")
+		.style("stroke", "red")
+		.style("stroke-width", "1px")
+		.style("opacity", 0)
+	;
 	 
-	roadnodes.on("mouseover", function() {
+	selectionnodes.on("mouseover", function() {
 		 var self = d3.select(this);
-		 var point = self[0][0].getPointAtLength(0);
-		 var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
+		 var point = projection(self.datum().geometry.coordinates);
+		 var thisPoint = new toxi.geom.Vec2D(point[0], point[1]);
 		 var currentEndPoint = new toxi.geom.Vec2D(parseFloat(currentEnd.x), parseFloat(currentEnd.y));
-		 var selected = getEdge(thisPoint, currentEndPoint);
-		 if (isValid(selected) && isSimple(selected) 
-					&& !routeComplete) {
+		 if (isIdentical(thisPoint, currentEndPoint)) {
+			 var pointBefore = new toxi.geom.Vec2D(parseFloat(route[route.length-2].x), parseFloat(route[route.length-2].y));
+			 var selected = getEdge(thisPoint, pointBefore);
+		 } else {
+			 var selected = getEdge(thisPoint, currentEndPoint);
+		 }
+		 if (selected && isValid(selected) && isSimple(selected) && !routeComplete) {
 				selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
-			}
+		}
 	 });
 	
-	roadnodes.on("mouseout", function() {
+	selectionnodes.on("mouseout", function() {
 		var self = d3.select(this);
-		var point = self[0][0].getPointAtLength(0);
-		var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
-		notHighlightEdge(thisPoint, currentEnd);
+		 var point = projection(self.datum().geometry.coordinates);
+		 var thisPoint = new toxi.geom.Vec2D(point[0], point[1]);
+		var currentEndPoint = new toxi.geom.Vec2D(parseFloat(currentEnd.x), parseFloat(currentEnd.y));
+		if (isIdentical(thisPoint, currentEndPoint)) {
+			 var pointBefore = new toxi.geom.Vec2D(parseFloat(route[route.length-2].x), parseFloat(route[route.length-2].y));
+			 var selected = getEdge(thisPoint, pointBefore);
+		 } else {
+			 var selected = getEdge(thisPoint, currentEndPoint);
+		 }
+		if (selected && selected.style("opacity") == ROUTE_OPACITY_SELECTABLE && isValid(selected)) {
+			selected.style("opacity", selected.attr("active")=="true" ? ROUTE_OPACITY_ACTIVE : ROUTE_OPACITY_INACTIVE);
+		}
 	});
 	
-	roadnodes.on("mousedown", function() {
+	selectionnodes.on("mousedown", function() {
 		leftMB = true;
 		var self = d3.select(this);
-//		var id = self[0][0].id.replace(/\D/g,'');
-		var point = self[0][0].getPointAtLength(0);
-		var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
-		var selected = getEdge(thisPoint, currentEnd); 
-		if (isValid(selected) && isSimple(selected) && !routeComplete) {
+		 var point = projection(self.datum().geometry.coordinates);
+		 var thisPoint = new toxi.geom.Vec2D(point[0], point[1]);
+		var currentEndPoint = new toxi.geom.Vec2D(parseFloat(currentEnd.x), parseFloat(currentEnd.y));
+		if (isIdentical(thisPoint, currentEndPoint)) {
+			 var pointBefore = new toxi.geom.Vec2D(parseFloat(route[route.length-2].x), parseFloat(route[route.length-2].y));
+			 var selected = getEdge(thisPoint, pointBefore);
+		 } else {
+			 var selected = getEdge(thisPoint, currentEndPoint);
+		 }
+		if (selected && isValid(selected) && isSimple(selected) && !routeComplete) {
 			drawSegment(selected);
 		}
 	});
 	
-	roadnodes.on("mouseup", function() {
+	selectionnodes.on("mouseup", function() {
 		leftMB = false;
 	});
 			
@@ -798,6 +844,7 @@ d3.json(pointsABpath, function(error, pointdata) {
 	
 	// initial state: starting point is current end of route
 	currentEnd = new toxi.geom.Vec2D(pointAx, pointAy);
+	route.push(currentEnd);
 	// console.log("current end: " + currentEnd);
 });
 
