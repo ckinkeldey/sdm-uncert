@@ -51,7 +51,7 @@ var backgroundPath = "./images/map.png";
 var roadfile = "vector_risk_length";
 var pointsABpath = "data/"+pointsABname+".topojson";
 
-var SYMBOL_RISK = "images/warning_red_white.png";
+var SYMBOL_RISK = "images/warning_red_white_new.svg";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
 
 
@@ -330,14 +330,14 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	function getCircleRadius(d) {
 		var factor = 5-d.properties.risk;
 		var radius = Math.sqrt(factor/Math.PI) * 8;
-		return radius;
+		return Math.round(radius);
 	}
 	
 	// width = sqrt(2*A)
 	function getSymbolSize(d) {
 		var factor = 5-d.properties.risk;
 		var symbolSize = visualization == EXPLICIT_SYMBOL || visualization == EXPLICIT_SYMBOL_M ? Math.sqrt(2*factor) * 8 : SYMBOL_SIZE;
-		return symbolSize;
+		return Math.round(symbolSize);
 	}
 	
 	function getSymbolOpacity(d) {
@@ -530,7 +530,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.attr("id", function(d) {return "sketchy" + d.properties.id;})
 			.style("stroke-width", 1)
 	//		.style("stroke-linecap", "round")
-			.style("stroke", "red")
+			.style("stroke", function(d) {var risk = 5-d.properties.risk; })
 			.style("stroke-dasharray", (4,4))
 			.style("fill", "none")
 			.style("opacity", 1)
@@ -650,7 +650,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		.append("path")
 		.attr("d", path)
 		.attr("id", function(d) {return "road" + d.properties.id;})
-		.style("stroke", "#f00")
+		.style("stroke", ROUTE_COLOR)
 		.style("stroke-width", ROUTE_SELECT_WIDTH)
 		.style("stroke-linecap", "round")
 		.style("opacity", 0)
@@ -667,6 +667,15 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 //		console.log("part of route: " + isPartOfRoute(selected));
 	});	
 	
+	selection.on("mouseout", function() {
+		var self = d3.select(this);
+		var id = self.attr("id");
+		var selected = d3.select("#" + id+"_highlight");
+		if (selected.style("opacity") == ROUTE_OPACITY_SELECTABLE && isValid(selected)) {
+			selected.style("opacity", selected.attr("active")=="true" ? ROUTE_OPACITY_ACTIVE : ROUTE_OPACITY_INACTIVE);
+		}
+	});	
+	
 	selection.on("mousedown", function() {
 		leftMB = true;
 		var self = d3.select(this);
@@ -680,15 +689,6 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	selection.on("mouseup", function() {
 		leftMB = false;
 	});
-	
-	selection.on("mouseout", function() {
-		var self = d3.select(this);
-		var id = self.attr("id");
-		var selected = d3.select("#" + id+"_highlight");
-		if (selected.style("opacity") == ROUTE_OPACITY_SELECTABLE && isValid(selected)) {
-			selected.style("opacity", selected.attr("active")=="true" ? ROUTE_OPACITY_ACTIVE : ROUTE_OPACITY_INACTIVE);
-		}
-	});	
 	
 });
 
@@ -712,14 +712,36 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 			.style("opacity", 1)
 			;
 			
-	// roadnodes.on("mouseover", function() {
-		// var self = d3.select(this);
-		// highlightEdge(highlight, self[0][0].getPointAtLength(0), currentEnd);
-		// // if (selected) {
-			// // var selected1 = d3.select("#road1_highlight");
-			// // selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
-		// // }
-	// });	
+	 
+	roadnodes.on("mouseover", function() {
+		 var self = d3.select(this);
+		 var point = self[0][0].getPointAtLength(0);
+		 var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
+		 highlightEdge(thisPoint, currentEnd);
+	 });
+	
+	roadnodes.on("mouseout", function() {
+		var self = d3.select(this);
+		var point = self[0][0].getPointAtLength(0);
+		var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
+		notHighlightEdge(thisPoint, currentEnd);
+	});
+	
+	roadnodes.on("mousedown", function() {
+		leftMB = true;
+		var self = d3.select(this);
+		var id = self[0][0].id.replace(/\D/g,'');
+		var point = self[0][0].getPointAtLength(0);
+		var thisPoint = new toxi.geom.Vec2D(point.x, point.y);
+		var selected = getEdge(thisPoint, currentEnd); 
+		if (isValid(selected) && isSimple(selected) && !routeComplete) {
+			drawSegment(selected);
+		}
+	});
+	
+	roadnodes.on("mouseup", function() {
+		leftMB = false;
+	});
 			
 });
 
@@ -855,35 +877,49 @@ function isPartOfRoute(path) {
 	return false;
 }
 
-function highlightEdge(edges, point0, point1) {
-	var p0 = new toxi.geom.Vec2D(point0.x, point0.y);
-	var p1 = new toxi.geom.Vec2D(point1.x, point1.y);
-	if (isIdentical(p0, p1)) {
+function getEdge(point0, point1) {
+	if (isIdentical(point0, point1)) {
 		return null;
 	}
-	edges
+	var edges = highlight.data();
+	for (var i = 0; i < edges.length; i++) {
+		if (isEdge(point0, point1, edges[i])) {
+			var id = "#road" + edges[i].properties.id + "_highlight";
+			return d3.select(id);
+		}
+	}
+	return null;
+}
+
+function highlightEdge(point0, point1) {
+	if (isIdentical(point0, point1)) {
+		return;
+	}
+	highlight
 	.each(function(d) {
 		var self = d3.select(this);
 		self.style("opacity", function(d) {
-			return isEdge(p0, p1, d) ? ROUTE_OPACITY_SELECTABLE : ROUTE_OPACITY_INACTIVE;
+			return isEdge(point0, point1, d) ? ROUTE_OPACITY_SELECTABLE : self.style("opacity");
 		});
 	});
-	// for (var i = 0; i < edges[0].length; i++) {
-		// var start = edges[0][i].getPointAtLength(0);
-		// var end = edges[0][i].getPointAtLength(edges[0][i].getTotalLength());
-		// var startPoint = new toxi.geom.Vec2D(point0.x, point0.y);
-		// var endPoint = new toxi.geom.Vec2D(point1.x, point1.y);
-		// if ((isIdentical(p0, startPoint) && isIdentical(endPoint, p1))
-			// || (isIdentical(p1, startPoint) && isIdentical(endPoint, p0))) {
-			// return edges[0][i];
-		// }
-	// }
-	// return null;
+}
+
+function notHighlightEdge(point0, point1) {
+	if (isIdentical(point0, point1)) {
+		return;
+	}
+	highlight
+	.each(function(d) {
+		var self = d3.select(this);
+		self.style("opacity", function(d) {
+			return isEdge(point0, point1, d) ? ROUTE_OPACITY_INACTIVE : self.style("opacity");
+		});
+	});
 }
 
 function isEdge(p0, p1, edge) {
 	var start = projection(edge.geometry.coordinates[0]);
-	var end = projection(edge.geometry.coordinates[0]);
+	var end = projection(edge.geometry.coordinates[1]);
 	var startPoint = new toxi.geom.Vec2D(start[0], start[1]);
 	var endPoint = new toxi.geom.Vec2D(end[0], end[1]);
 	return ((isIdentical(p0, startPoint) && isIdentical(endPoint, p1))
