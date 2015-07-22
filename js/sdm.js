@@ -967,13 +967,14 @@ function submitRoute() {
 //	alertString += "route: " + routeline(route) + "\n";
 //	var json_lines = JSON.stringify(routeline(route));
 //	console.log("json: " + json_lines);
-	
-	console.log(getGeoJSON(route));
-	
+
 	alert(alertString);
 	
+	var geoJSON = getGeoJSON(route);
+	console.log(geoJSON);
+	
 	var mydata = "amt_id=2&timestamp=4634&pctime="+overalltime+"&scenario_id=0" +
-	"&coords=1,2,3,4,6,7,7&total_risk=0&distance="+routeLength+"&outcome=0";
+	"&coords="+geoJSON+"&total_risk=0&distance="+routeLength+"&outcome=0";
 	
 //	jQuery.ajax({
 //    type: "GET",
@@ -1002,7 +1003,8 @@ function submitRoute() {
 			    +"\"coordinates\": [\n";
 			                        
 		for (var i = 0; i < route.length; i++) {
-			geojson += "["+route[i].x+","+route[i].y+"],\n";
+			var worldCoords = projection.invert([route[i].x, route[i].y]);
+			geojson += "[" + worldCoords[0] + "," + worldCoords[1] + "],\n";
 		}
 		geojson += "]}}]}";
 		return geojson;
