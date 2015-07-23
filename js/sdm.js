@@ -49,7 +49,8 @@ var SYMBOL_RISK = "images/warning_red_white_new.svg";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
 
 var pointsABpath = "data/"+pointsABname+".topojson";
-
+var switchAB = Math.random() >= 0.5;
+	
 var minLength = 61.5;
 var eps = 10;
 var route = [];
@@ -806,7 +807,9 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.data(abdata)
 		.enter()
 		.append("circle")
-		.attr("id", function(d) {return "p" + d.properties.id;})
+		.attr("id", function(d) {
+			return switchAB ? "p" + (1-parseFloat(d.properties.id)) : "p" + d.properties.id;
+		})
 		.attr("cx", function(d) {return projection(d.geometry.coordinates)[0];})
 		.attr("cy",  function(d) {return projection(d.geometry.coordinates)[1];})
 		.attr("r", "12px")
@@ -819,11 +822,11 @@ d3.json(pointsABpath, function(error, pointdata) {
 	var pointAy = d3.select("#p0").attr("cy");
 	var pointBx = d3.select("#p1").attr("cx");
 	var pointBy = d3.select("#p1").attr("cy");
-//	var labelPosition = A_B_LABEL_POSITION[];
-	var labelAx = parseFloat(pointAx) + A_B_LABEL_POSITION[0]; 
-	var labelAy = parseFloat(pointAy) + A_B_LABEL_POSITION[1];
-	var labelBx = parseFloat(pointBx) + A_B_LABEL_POSITION[2]; 
-	var labelBy = parseFloat(pointBy) + A_B_LABEL_POSITION[3];
+
+	var labelAx = parseFloat(pointAx) + A_B_LABEL_POSITION[switchAB?2:0]; 
+	var labelAy = parseFloat(pointAy) + A_B_LABEL_POSITION[switchAB?3:1];
+	var labelBx = parseFloat(pointBx) + A_B_LABEL_POSITION[switchAB?0:2]; 
+	var labelBy = parseFloat(pointBy) + A_B_LABEL_POSITION[switchAB?1:3];
 	
 	pointlayer.selectAll("labels")
 		.data(abdata)
@@ -837,7 +840,9 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 		 .style("font-weight", "bold")
 		 .style("font-size", "40px")
-		.text(function (d) {return d.properties.id==0?"A":"B";})
+		.text(function (d) {
+				return d.properties.id==0?"A":"B";
+			})
 	;
 	
 	// initial state: starting point is current end of route
