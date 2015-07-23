@@ -272,6 +272,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		})
 		.style("fill", SYMBOL_COLOR)
 		.style("stroke", SYMBOL_STROKE_COLOR)
+		.style("stroke-size", 1)
 		.style("opacity", function(d) {
 			return 1;//visualization == EXPLICIT_SYMBOL_M ? getSymbolOpacity(d) : 1;
 		});
@@ -869,7 +870,7 @@ function drawSegment(selected) {
 		probNotBlocked /= segProbNotBlocked;
 		routeRisk = 1 - probNotBlocked;
 	}
-	 console.log("current route: " + route);
+//	 console.log("current route: " + route);
 	// console.log("current route length: " + routeLength);
 	d3.select("#lengthTextfield").html("Route length: " + Math.round(routeLength) + " m");
 	d3.select("#riskTextfield").html("Not blocked: " + Math.round(100*probNotBlocked ) + "%");

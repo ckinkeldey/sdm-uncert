@@ -35,7 +35,7 @@
 	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_blue.png" width="100px">
+		<img src="images/legend_blue_border.png" width="100px">
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -53,14 +53,14 @@
 		var roadfile = "scenario2";
 		var roadnodesfile = "scenario2_points";
 		var pointsABname = "scenario2-AB1";
-		var A_B_LABEL_POSITION = [ -20, -15, 0, 50 ];
+		var A_B_LABEL_POSITION = [ -25, 35, -10, 50 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		
 		var width = 800;
 		var height = 500;
-		var center = [width / (200.), height / 200.], // Center vector [lon, lat]
-		var scale = width * 2.3 * Math.PI,
+		var center = [width / (200.), height / 200.]; // Center vector [lon, lat]
+		var scale = width * 2.3 * Math.PI;
 		var translate = [width/2, height/2-1];
 	</script>
 	<script src="lib/d3.js"></script>

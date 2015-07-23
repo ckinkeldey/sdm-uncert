@@ -35,7 +35,7 @@
 	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_blue.png" width="100px">
+		<img src="images/legend_blue_border.png" width="100px">
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -59,8 +59,8 @@
 		
 		var width = 800;
 		var height = 500;
-		var center = [width / (200.), height / 200.], // Center vector [lon, lat]
-		var scale = width * 2.3 * Math.PI,
+		var center = [width / (200.), height / 200.]; // Center vector [lon, lat]
+		var scale = width * 2.3 * Math.PI;
 		var translate = [width/2, height/2-1];
 	</script>
 	<script src="lib/d3.js"></script>
