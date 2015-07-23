@@ -1,6 +1,10 @@
-var scenarios = [ "explicit-color.html", "explicit-color-m.html",
-		"explicit-symbol.html", "explicit-symbol-m.html",
-		"explicit-texture.html", "explicit-texture-m.html" ];
+var scenarios = [ "explicit-color.html", "explicit-color-1b.html", "explicit-color-2.html",
+                  "explicit-color-m.html",
+                  "explicit-symbol.html", 
+                  "explicit-symbol-m.html",
+                  "explicit-texture.html", 
+                  "explicit-texture-m.html" 
+                  ];
 if (random) {
 	shuffle(scenarios);
 }

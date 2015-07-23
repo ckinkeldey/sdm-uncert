@@ -2,7 +2,6 @@
 <html>
 <head>
 	<meta charset="utf-8">
-<!-- 		<meta http-equiv="refresh" content="0; url=explicit-color.html" /> -->
 	<title>Spatial decision making study</title>
 	<style>
 		path {
@@ -22,30 +21,39 @@
 		.invisible {
 			display: none;
 		}
+		.noselect {
+		    -webkit-touch-callout: none;
+		    -webkit-user-select: none;
+		    -khtml-user-select: none;
+		    -moz-user-select: none;
+		    -ms-user-select: none;
+		    user-select: none;
+		}
 	</style>
 </head>
 <body>
-	<h3>Welcome!</h3>
-	<div id="introtext">
-		<p>A flooding event occurred in the area shown on the map. There
-			is the risk that roads may be blocked due to the flooding. You are an
-			emergency responder at location “A” with important supplies that have
-			to be delivered to location “B” as fast as possible.</p>
-		<p>Try the example below to learn how the route drawing tool works. 
-		Press the "submit" button to start the actual study.</p>
-	</div>
+	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
+	<div id="legend" style="float: left; margin-left: 50px;">
+		<img src="images/legend_blue_border.png" width="100px">
+	</div>
 	<div id="buttons" style="clear: both;">
-		<input id="submitButton" type="button"
-			value="Submit" onclick="next();" style="float: right;" />
+	<input id="deleteButton" type="button" value="Delete route"
+		onclick="deleteRoute();" /> 
+	<input id="submitButton" type="button"
+		value="Submit" onclick="next();" style="float: right;" />
+	</div>
+	<div id="textInfo" style="clear: both;">
+		<p id="lengthTextfield">Route length: 0 m</p>
+		<p id="riskTextfield">Not blocked:</p>
 	</div>
 	<script>
-		var visualization = 0;
-		var backgroundPath = "./images/training.png";
-		var roadfile = "scenario1";
-		var roadnodesfile = "scenario1_points";
-		var pointsABname = "AB1";
-		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
+		var visualization = 3;
+		var backgroundPath = "./images/scenario2.png";
+		var roadfile = "scenario2";
+		var roadnodesfile = "scenario2_points";
+		var pointsABname = "scenario2-AB1";
+		var A_B_LABEL_POSITION = [ -25, 35, -10, 50 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		
@@ -60,5 +68,6 @@
 	<script src="lib/jquery.js"></script>
 	<script src="lib/toxiclibs.js"></script>
 	<script src="js/sdm.js"></script>
+	<script>startTime();</script>
 </body>
 </html>

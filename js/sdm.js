@@ -1048,7 +1048,7 @@ function submitRoute() {
 //	var json_lines = JSON.stringify(routeline(route));
 //	console.log("json: " + json_lines);
 
-	alert(alertString);
+//	alert(alertString);
 	
 	var geoJSON = getGeoJSON(route);
 	console.log(geoJSON);
