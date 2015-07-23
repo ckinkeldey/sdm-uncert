@@ -35,9 +35,6 @@ var SYMBOL_SIZE = 20;
 var SYMBOL_COLOR = "rgb(5,112,176)";
 var SYMBOL_STROKE_COLOR = "white";
 
-var width = 873;
-var height = 499;
-
 var ROUTE_0 = [5,32,33,34,83,84,67,62,63];
 var ROUTE_1 = [7,51,52,53,57,41,36,19,21,69,40,23,27];
 
@@ -48,13 +45,10 @@ if (typeof routes !== 'undefined' && routes) {
 	route1 = ROUTE_1;
 }
 
-var backgroundPath = "./images/map.png";
-var roadfile = "vector_risk_length";
-var pointsABpath = "data/"+pointsABname+".topojson";
-
 var SYMBOL_RISK = "images/warning_red_white_new.svg";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
 
+var pointsABpath = "data/"+pointsABname+".topojson";
 
 var minLength = 61.5;
 var eps = 10;
@@ -78,12 +72,7 @@ var leftMB = false;
 var currentEnd;
 
 var rasterX = 0,
-    rasterY = 0, // Offset (px) for positioning raster in 	<div>
-    imgWidth = 873, // <image> dimensions (don't change these)
-    imgHeight = 499,
-    center = [imgWidth / 200., imgHeight / 200.], // Center vector [lon, lat]
-    scale = imgWidth * 2.1 * Math.PI,
-    translate = [width/2, height/2];
+    rasterY = 0; // Offset (px) for positioning raster in 	<div>
 
 var projection = d3.geo.mercator()
 .center(center)
@@ -95,7 +84,7 @@ var path = d3.geo.path().projection(projection);
 
 var svg = d3.select("#map").append("svg").attr("width", width).attr("height", height);
 
-var rasterlayer = svg.append("g").attr("id", "map");
+var rasterlayer = svg.append("g").attr("id", "background");
 var highlightlayer = svg.append("g").attr("id", "highlight");
 var roadlayer = svg.append("g").attr("id", "roads");
 var symbollayer = svg.append("g").attr("id", "symbols");
@@ -106,6 +95,7 @@ var selectionlayer = svg.append("g").attr("id", "selection");
 var selectionnodeslayer = svg.append("g").attr("id", "selectionnodes");
 
 rasterlayer.append("image")
+	.attr("class", "noselect")
 	.attr("width", width + "px")
 	.attr("height", height + "px")
 	.attr("x", rasterX + "px")
@@ -666,7 +656,9 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var self = d3.select(this);
 		var id = self.attr("id");
 		var selected = d3.select("#" + id +"_highlight");
-		if (isValid(selected) && isSimple(selected) && !routeComplete) {
+		if (leftMB && isValid(selected) && isSimple(selected) && !routeComplete) {
+			drawSegment(selected);
+		} else if (isValid(selected) && isSimple(selected) && !routeComplete) {
 			selected.style("opacity", ROUTE_OPACITY_SELECTABLE);
 		}
 //		console.log("part of route: " + isPartOfRoute(selected));
@@ -697,11 +689,11 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	
 });
 
-d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
+d3.json("data/"+ roadnodesfile + ".topojson", function(error, roadnodesdata) {
 	if (error)
 		throw error;
 		
-	var roadnodesdata = topojson.feature(roadnodesdata, roadnodesdata.objects[roadfile+"_points"]).features;
+	var roadnodesdata = topojson.feature(roadnodesdata, roadnodesdata.objects[roadnodesfile]).features;
 		
 	// road nodes as layover
 	var roadnodes = roadnodeslayer.selectAll("path")
@@ -749,7 +741,10 @@ d3.json("data/"+ roadfile + "_points.topojson", function(error, roadnodesdata) {
 		 var point = projection(self.datum().geometry.coordinates);
 		 var thisPoint = new toxi.geom.Vec2D(point[0], point[1]);
 		 var currentEndPoint = new toxi.geom.Vec2D(parseFloat(currentEnd.x), parseFloat(currentEnd.y));
-		 if (isIdentical(thisPoint, currentEndPoint)) {
+		 
+		 if (leftMB && selected && isValid(selected) && isSimple(selected) && !routeComplete) {
+				drawSegment(selected);
+		 } else if (isIdentical(thisPoint, currentEndPoint)) {
 			 var pointBefore = new toxi.geom.Vec2D(parseFloat(route[route.length-2].x), parseFloat(route[route.length-2].y));
 			 var selected = getEdge(thisPoint, pointBefore);
 		 } else {
@@ -823,6 +818,7 @@ d3.json(pointsABpath, function(error, pointdata) {
 	var pointAy = d3.select("#p0").attr("cy");
 	var pointBx = d3.select("#p1").attr("cx");
 	var pointBy = d3.select("#p1").attr("cy");
+//	var labelPosition = A_B_LABEL_POSITION[];
 	var labelAx = parseFloat(pointAx) + A_B_LABEL_POSITION[0]; 
 	var labelAy = parseFloat(pointAy) + A_B_LABEL_POSITION[1];
 	var labelBx = parseFloat(pointBx) + A_B_LABEL_POSITION[2]; 
@@ -832,6 +828,7 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.data(abdata)
 		.enter()
 		.append("svg:text")
+		.attr("class", "noselect")
 		.attr("x", function (d) {return d.properties.id==0?labelAx:labelBx;})
 		.attr("y", function (d) {return d.properties.id==0?labelAy:labelBy;})
 		.style("fill", START_END_POINTS_COLOR)
@@ -850,13 +847,10 @@ d3.json(pointsABpath, function(error, pointdata) {
 
 function drawSegment(selected) {
 	var active = (selected.attr("active") == "true") ? false : true;
-	// console.log("active = " + selected.attr("active"));
-	// console.log("new active = " + active);
 	newOpacity = active ? ROUTE_OPACITY_ACTIVE : ROUTE_OPACITY_INACTIVE;
 	// console.log("new opacity = " + newOpacity);
 	selected.style("opacity", newOpacity);
 	selected.attr("active", active);
-	// add or remove selected part to/from the route
 	var segLength = parseFloat(selected.attr("length"));
 	var segRisk = parseFloat(risks[selected.attr("risk")]);
 	if (active == true) {
@@ -875,7 +869,7 @@ function drawSegment(selected) {
 		probNotBlocked /= segProbNotBlocked;
 		routeRisk = 1 - probNotBlocked;
 	}
-	// console.log("current route: " + route);
+	 console.log("current route: " + route);
 	// console.log("current route length: " + routeLength);
 	d3.select("#lengthTextfield").html("Route length: " + Math.round(routeLength) + " m");
 	d3.select("#riskTextfield").html("Not blocked: " + Math.round(100*probNotBlocked ) + "%");
@@ -1010,6 +1004,8 @@ function deleteRoute() {
 	var pointAx = d3.select("#p0").attr("cx");
 	var pointAy = d3.select("#p0").attr("cy");
 	currentEnd = new toxi.geom.Vec2D(pointAx, pointAy);
+	route = [];
+	route.push(currentEnd);
 	
 	highlight = d3.select("#highlight").selectAll("*")
 	.each(function(d) {

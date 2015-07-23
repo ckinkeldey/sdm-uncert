@@ -4,24 +4,24 @@
 	<meta charset="utf-8">
 	<title>Spatial decision making study</title>
 	<style>
-			path {
-				stroke-width: 10px;
-				stroke-linecap: round;
-			}
-			div {
-				float: left;
-			}
-			text {
-				font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
-				text-anchor: middle;
-				pointer-events: none;
-				text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px
-					0 #fff;
-			}
-			.invisible {
-				display: none;
-			}
-			.noselect {
+		path {
+			stroke-width: 10px;
+			stroke-linecap: round;
+		}
+		div {
+			float: left;
+		}
+		text {
+			font: 40px "Helvetica Neue", Helvetica, Arial, sans-serif;
+			text-anchor: middle;
+			pointer-events: none;
+			text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px
+				0 #fff;
+		}
+		.invisible {
+			display: none;
+		}
+		.noselect {
 		    -webkit-touch-callout: none;
 		    -webkit-user-select: none;
 		    -khtml-user-select: none;
@@ -29,13 +29,13 @@
 		    -ms-user-select: none;
 		    user-select: none;
 		}
-		</style>
+	</style>
 </head>
 <body>
 	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_blue_border.png" width="100px">
+		<img src="images/legend_blue.png" width="100px">
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -50,17 +50,17 @@
 	<script>
 		var visualization = 1;
 		var backgroundPath = "./images/scenario1.png";
-		var roadfile = "scenario1";
+		var roadfile = "scenario1b";
 		var roadnodesfile = "scenario1_points";
-		var pointsABname = "AB1";
+		var pointsABname = "AB2";
 		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		
 		var width = 800;
 		var height = 500;
-		var center = [width / (200.), height / 200.]; // Center vector [lon, lat]
-		var scale = width * 2.3 * Math.PI;
+		var center = [width / (200.), height / 200.], // Center vector [lon, lat]
+		var scale = width * 2.3 * Math.PI,
 		var translate = [width/2, height/2-1];
 	</script>
 	<script src="lib/d3.js"></script>

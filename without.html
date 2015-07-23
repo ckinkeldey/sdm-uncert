@@ -21,11 +21,15 @@
 			.invisible {
 				display: none;
 			}
+			.noselect {
+		    -webkit-touch-callout: none;
+		    -webkit-user-select: none;
+		    -khtml-user-select: none;
+		    -moz-user-select: none;
+		    -ms-user-select: none;
+		    user-select: none;
+		}
 		</style>
-		<script src="lib/d3.js"></script>
-		<script src="lib/topojson.js"></script>
-		<script src="lib/jquery.js"></script>
-		<script src="lib/toxiclibs.js"></script>
 	</head>
 	<body>
 		<h3>Please draw a route from A to B and press "submit".</h3>
@@ -45,11 +49,25 @@
 	</div>
 	<script>
 		var visualization = 0;
+		var backgroundPath = "./images/scenario1.png";
+		var roadfile = "scenario1";
+		var roadnodesfile = "scenario1_points";
 		var pointsABname = "AB1";
-		var A_B_LABEL_POSITION = [ -30, 0, 25, -5 ];
+		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
+		
+		var width = 800;
+		var height = 500;
+		var center = [width / (200.), height / 200.]; // Center vector [lon, lat]
+		var scale = width * 2.3 * Math.PI;
+		var translate = [width/2, height/2-1];
 	</script>
+	<script src="lib/d3.js"></script>
+	<script src="lib/topojson.js"></script>
+	<script src="lib/jquery.js"></script>
+	<script src="lib/toxiclibs.js"></script>
 	<script src="js/sdm.js"></script>
+	<script>startTime();</script>
 	</body>
 </html>
