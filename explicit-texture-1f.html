@@ -3,7 +3,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Spatial decision making study</title>
-
 	<style>
 		path {
 			stroke-width: 10px;
@@ -22,13 +21,21 @@
 		.invisible {
 			display: none;
 		}
+		.noselect {
+		    -webkit-touch-callout: none;
+		    -webkit-user-select: none;
+		    -khtml-user-select: none;
+		    -moz-user-select: none;
+		    -ms-user-select: none;
+		    user-select: none;
+		}
 	</style>
 </head>
 <body>
 	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_red_warning.png" >
+		<img src="images/legend_blue_border.png" width="100px">
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -41,12 +48,12 @@
 		<p id="riskTextfield">Not blocked:</p>
 	</div>
 	<script>
-		var visualization = 4;
+		var visualization = 5;
 		var backgroundPath = "./images/scenario1.png";
-		var roadfile = "scenario1";
+		var roadfile = "scenario1f";
 		var roadnodesfile = "scenario1_points";
-		var pointsABname = "AB1";
-		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
+		var pointsABname = "AB1f";
+		var A_B_LABEL_POSITION = [ -20, -25, 25, -20 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		
