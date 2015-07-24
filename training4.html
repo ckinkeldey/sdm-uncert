@@ -35,33 +35,33 @@
 	<h3>Please draw a route from A to B and press "submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_blue_circle.png" >
+		<img src="images/legend_red_warning.png" >
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
 		onclick="deleteRoute();" /> 
 	<input id="submitButton" type="button"
-		value="Submit" onclick="next();" style="float: right;" />
+		value="Submit" onclick="parent.location='training5.html'" style="float: right;" />
 	</div>
 <!-- 	<div id="textInfo" style="clear: both;"> -->
 <!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
 <!-- 		<p id="riskTextfield">Not blocked:</p> -->
 <!-- 	</div> -->
 	<script>
-		var visualization = 3;
-		var backgroundPath = "./images/scenario1.png";
-		var roadfile = "scenario1d";
-		var roadnodesfile = "scenario1_points";
-		var pointsABname = "AB1d";
-		var A_B_LABEL_POSITION = [ -30, 0, 35, 25 ];
+		var visualization = 4;
+		var backgroundPath = "./images/training.png";
+		var roadfile = "training";
+		var roadnodesfile = "training_points";
+		var pointsABname = "AB";
+		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		
-		var width = 800;
-		var height = 500;
+		var width = 400;
+		var height = 400;
 		var center = [width / (200.), height / 200.]; // Center vector [lon, lat]
-		var scale = width * 2.3 * Math.PI;
-		var translate = [width/2, height/2-1];
+		var scale = width * 3 * Math.PI;
+		var translate = [width/3, height/2-1];
 	</script>
 	<script src="lib/d3.js"></script>
 	<script src="lib/topojson.js"></script>
