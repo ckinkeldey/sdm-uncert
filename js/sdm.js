@@ -1033,14 +1033,14 @@ function deleteRoute() {
 function submitRoute() {
 	var alertString = "";
 	var overalltime = (new Date().getTime() - time)/1000;
-	alertString += "route length: " + routeLength + "\n";
-	alertString += "time: " + overalltime + " s.\n";
+//	alertString += "route length: " + routeLength + "\n";
+//	alertString += "time: " + overalltime + " s.\n";
 	var probability = Math.round(100*probNotBlocked)/100;
 	console.log("overall prob for not blocked: " + probability);
-	var displayString = "p(not blocked): " + probability;
-	var decision = Math.random() > probNotBlocked ? 
-			displayString + " -> blocked!" : displayString + " -> not blocked!";
-	alertString += decision + "\n";
+//	var displayString = "";//"p(not blocked): " + probability;
+	Math.random() > probNotBlocked ? 
+			alertString += " blocked" : alertString += "not blocked";
+//	alertString += decision + "\n";
 //	var routeline = d3.svg.line()
 //    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
 //    .y(function(d,i) { return projection.invert([route[i].x, route[i].y])[1]; });
@@ -1048,7 +1048,7 @@ function submitRoute() {
 //	var json_lines = JSON.stringify(routeline(route));
 //	console.log("json: " + json_lines);
 
-//	alert(alertString);
+	alert(alertString);
 	
 	var geoJSON = getGeoJSON(route);
 	console.log(geoJSON);
