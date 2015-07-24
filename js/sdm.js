@@ -49,7 +49,7 @@ var SYMBOL_RISK = "images/warning_red_white_new.svg";
 var SYMBOL_BLOCKAGE = "images/no-entry-road-sign.png";
 
 var pointsABpath = "data/"+pointsABname+".topojson";
-var switchAB = Math.random() >= 0.5;
+var switchAB = false;//Math.random() >= 0.5;
 	
 var minLength = 61.5;
 var eps = 10;

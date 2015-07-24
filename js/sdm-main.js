@@ -1,5 +1,6 @@
-var scenarios = [ "explicit-color.html", "explicit-color-1b.html", "explicit-color-2.html",
-                  "explicit-color-m.html", "explicit-color-m-1b.html", "explicit-color-m-2.html",
+var scenarios = [ "explicit-color-1a.html", "explicit-color-m-1a.html",
+                  "explicit-color-1b.html", "explicit-color-m-1b.html",
+                  "explicit-color-2.html", "explicit-color-m-2.html",
                   "explicit-symbol.html", "explicit-symbol-1b.html", "explicit-symbol-2.html",
                   "explicit-symbol-m.html", "explicit-symbol-m-1b.html", "explicit-symbol-m-2.html",
                   "explicit-texture.html", "explicit-texture-1b.html", "explicit-texture-2.html", 
@@ -47,3 +48,4 @@ function shuffle(array) {
 
 	return array;
 }
+
