@@ -1071,11 +1071,11 @@ function submitRoute() {
             ('00' + date.getUTCMinutes()).slice(-2) + ':' +
             ('00' + date.getUTCSeconds()).slice(-2);    
 	    
-	var mydata = "user_id=" + ("user" + new Date()) 
+	var mydata = "user_id=1" //+ ("user" + new Date()) 
 		+"&timestamp=" + date
 		+"&pctime=" + overalltime
 		+"&scenario_id=" + scenarioId
-		+"&coords=" + geoJSON
+		+"&coords=" //+ geoJSON
 		+"&total_risk=" + (1-probNotBlocked)
 		+"&distance=" + routeLength
 		+"&outcome=" + outcome;
