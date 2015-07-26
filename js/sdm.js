@@ -1062,9 +1062,18 @@ function submitRoute() {
 	var geoJSON = getGeoJSON(route);
 //	console.log(geoJSON);
 	
+	var date;
+    date = new Date();
+    date = date.getUTCFullYear() + '-' +
+            ('00' + (date.getUTCMonth() + 1)).slice(-2) + '-' +
+            ('00' + date.getUTCDate()).slice(-2) + ' ' +
+            ('00' + date.getUTCHours()).slice(-2) + ':' +
+            ('00' + date.getUTCMinutes()).slice(-2) + ':' +
+            ('00' + date.getUTCSeconds()).slice(-2);    
+	    
 	var mydata = "amt_id=2"
-		+"&timestamp=" + new Date().getTime()
-		+"&pctime=" + overalltime
+		+"&timestamp=" + date
+		+"&pctime=1111" + overalltime
 		+"&scenario_id=" + scenarioId
 		+"&coords=" + geoJSON
 		+"&total_risk=" + (1-probNotBlocked)

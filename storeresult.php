@@ -1,7 +1,7 @@
 <script language="php">
     
-    require_once('fb.php');
-    ob_start();
+    //require_once('fb.php');
+    //ob_start();
     
     ini_set('display_errors', 1); 
 	error_reporting(E_ALL); 
@@ -25,31 +25,31 @@
     if (!$con) {
         die('Could not connect: ' . mysql_error());
     }
-    fb("<p>$con</p>");
+    echo"<p>$con</p>";
     
     mysql_select_db($db_name, $con);
     
     // insert data into db
     $sql = "INSERT INTO $db_table (amt_id, timestamp, pctime, scenario_id, coords, total_risk, distance, outcome) VALUES
     ('" . $amt_id . "'," 
-    . $timestamp . "," 
-    . $pctime . "," 
-    . $scenario_id . ",'"
-    . $coords . "',"
+    . "'" . $timestamp . "'," 
+    . $pctime . ","
+    . "'" . $scenario_id . "',"
+    . "'" . $coords . "',"
     . $total_risk . ","
     . $distance . ","
     . $outcome . 
     ")";
     
-    fb( "<p>$sql</p>");
+    echo "<p>$sql</p>";
     
     $result = mysql_query($sql);
     if (!$result) {
-     	fb( '<p>Invalid request: ' . mysql_error() . '</p>');
+     	echo "<p>Invalid request: " . mysql_error() . "</p>";
 	}
-    fb( "<p>Result: $result</p>");
+  	echo "<p>Result: " . $result . "</p>";
          
     mysql_close($con);
-    fb( "<p>connection closed.</p>");
+    echo "<p>connection closed.</p>";
     
 </script>
