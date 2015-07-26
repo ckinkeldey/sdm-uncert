@@ -14,7 +14,7 @@
             
 
             $inserts[] = "age=" . $_POST['age'];
-	    $inserts[] = "user=" . $_POST['user'];
+	    $inserts[] = "user_id=\"" . $_POST['userid']. "\"";
             $inserts[] = "sex=\"" . $_POST['sex'] . "\"";
 	    $inserts[] = "topDegree=\"" . htmlspecialchars($_POST['topDegree']) ."\"";
 	    $inserts[] = "otherDegree=\"" . htmlspecialchars($_POST['otherDegree']) ."\"";

@@ -14,6 +14,7 @@ var scenarios = [ "explicit-color-1a.html", "explicit-color-m-1a.html",
 if (random) {
 	shuffle(scenarios);
 }
+var userId = guid();//"user-" + new Date().getTime();
 var i = 0;
 $("#deleteButton").addClass("invisible");
 $("#textInfo").addClass("invisible");
@@ -35,6 +36,7 @@ function next() {
 		$("#submitButton").addClass("invisible");
 		$("#textInfo").addClass("invisible");
 		$("#mainpage").load("questionnaire.html");
+		$("#userid").val(userId);
 	}
 }
 
@@ -54,3 +56,12 @@ function shuffle(array) {
 	return array;
 }
 
+function guid() {
+	  function s4() {
+	    return Math.floor((1 + Math.random()) * 0x10000)
+	      .toString(16)
+	      .substring(1);
+	  }
+	  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+	    s4() + '-' + s4() + s4() + s4();
+	}

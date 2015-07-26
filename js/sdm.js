@@ -1071,7 +1071,7 @@ function submitRoute() {
             ('00' + date.getUTCMinutes()).slice(-2) + ':' +
             ('00' + date.getUTCSeconds()).slice(-2);    
 	    
-	var mydata = "user_id=" + ("user-" + new Date().getTime()) 
+	var mydata = "user_id=" + userId 
 		+"&timestamp=" + date
 		+"&pctime=" + overalltime
 		+"&scenario_id=" + scenarioId
