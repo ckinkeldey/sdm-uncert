@@ -59,6 +59,9 @@ var routeRisk = 1;
 var probNotBlocked = 1;
 var routeComplete = false;
 
+var TEXT_ROAD_BLOCKED = "The road is blocked.";
+var TEXT_ROAD_NOT_BLOCKED = "The road is not blocked.";
+
 var time;
 function startTime() {
 	time = new Date().getTime();
@@ -1039,7 +1042,7 @@ function submitRoute() {
 	console.log("overall prob for not blocked: " + probability);
 //	var displayString = "";//"p(not blocked): " + probability;
 	Math.random() > probNotBlocked ? 
-			alertString += " blocked" : alertString += "not blocked";
+			alertString += TEXT_ROAD_BLOCKED : alertString += TEXT_ROAD_NOT_BLOCKED;
 //	alertString += decision + "\n";
 //	var routeline = d3.svg.line()
 //    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })

@@ -33,41 +33,44 @@
 </head>
 <body>
 	<h3>Please draw a route from A to B and press "Submit".</h3>
+	<p>To draw a route on the map, click on the road segments to form a path from A to B. As you click on a segment of the road, it will be shown as yellow. To change your route at any time, press the “Delete route” button. This will erase your entire route and enable you to start again. To remove a selected segment of the route, click on the route a second time and you will see it will change from yellow to unselected.<br>
+	<br>This is a training example. When you are finished click the “Submit” button at the bottom of this page.<br>
+	</p>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_blue_circle.png" >
+		<img src="images/legend_blue_border.png" width="100px">
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
 		onclick="deleteRoute();" /> 
 	<input id="submitButton" type="button"
-		value="Submit" onclick="next();" style="float: right;" />
+		value="Submit" onclick="parent.location='training2.html'" style="float: right;" />
 	</div>
 <!-- 	<div id="textInfo" style="clear: both;"> -->
 <!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
 <!-- 		<p id="riskTextfield">Not blocked:</p> -->
 <!-- 	</div> -->
 	<script>
-		var visualization = 3;
-		var backgroundPath = "./images/scenario1.png";
-		var roadfile = "scenario1d";
-		var roadnodesfile = "scenario1_points";
-		var pointsABname = "AB1d";
-		var A_B_LABEL_POSITION = [ -30, 0, 35, 25 ];
+		var visualization = 1;
+		var backgroundPath = "./images/training.png";
+		var roadfile = "training";
+		var roadnodesfile = "training_points";
+		var pointsABname = "AB";
+		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		
-		var width = 800;
-		var height = 500;
+		var width = 400;
+		var height = 400;
 		var center = [width / (200.), height / 200.]; // Center vector [lon, lat]
-		var scale = width * 2.3 * Math.PI;
-		var translate = [width/2, height/2-1];
+		var scale = width * 3 * Math.PI;
+		var translate = [width/3, height/2-1];
 	</script>
 	<script src="lib/d3.js"></script>
 	<script src="lib/topojson.js"></script>
 	<script src="lib/jquery.js"></script>
 	<script src="lib/toxiclibs.js"></script>
 	<script src="js/sdm.js"></script>
-	<script>startTime();</script>
+
 </body>
 </html>
