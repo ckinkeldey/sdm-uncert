@@ -62,6 +62,8 @@ var routeComplete = false;
 var TEXT_ROAD_BLOCKED = "The road is blocked.";
 var TEXT_ROAD_NOT_BLOCKED = "The road is not blocked.";
 
+var currentScenario = "none";
+
 var time;
 function startTime() {
 	time = new Date().getTime();
@@ -1041,8 +1043,12 @@ function submitRoute() {
 	var probability = Math.round(100*probNotBlocked)/100;
 	console.log("overall prob for not blocked: " + probability);
 //	var displayString = "";//"p(not blocked): " + probability;
-	Math.random() > probNotBlocked ? 
-			alertString += TEXT_ROAD_BLOCKED : alertString += TEXT_ROAD_NOT_BLOCKED;
+	var outcome = Math.random() > probNotBlocked ? 1:0;
+	if (outcome == 1) {
+		alertString += TEXT_ROAD_BLOCKED;
+	} else {
+		alertString += TEXT_ROAD_NOT_BLOCKED;
+	}
 //	alertString += decision + "\n";
 //	var routeline = d3.svg.line()
 //    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })
@@ -1056,9 +1062,17 @@ function submitRoute() {
 	var geoJSON = getGeoJSON(route);
 //	console.log(geoJSON);
 	
-	var mydata = "amt_id=2&timestamp=4634&pctime="+overalltime+"&scenario_id=0" +
-	"&coords="+geoJSON+"&total_risk=0&distance="+routeLength+"&outcome=0";
+	var mydata = "amt_id=2"
+		+"&timestamp=" + new Date().getTime()
+		+"&pctime=" + overalltime
+		+"&scenario_id=" + scenarioId; 
+		+"&coords=" + geoJSON
+		+"&total_risk=" + (1-probNotBlocked)
+		+"&distance=" + routeLength
+		+"&outcome=" + outcome;
 	
+	console.log(mydata);
+		
 	jQuery.ajax({
     type: "GET",
     url: '../storeresult.php',
