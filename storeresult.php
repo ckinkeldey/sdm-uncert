@@ -7,7 +7,7 @@
 	error_reporting(E_ALL); 
 
     //get data from URL
-    $amt_id=$_GET["amt_id"];
+    $user_id=$_GET["user_id"];
     $timestamp=$_GET["timestamp"];
     $pctime=$_GET["pctime"];
     $scenario_id=$_GET["scenario_id"];
@@ -30,8 +30,8 @@
     mysql_select_db($db_name, $con);
     
     // insert data into db
-    $sql = "INSERT INTO $db_table (amt_id, timestamp, pctime, scenario_id, coords, total_risk, distance, outcome) VALUES
-    ('" . $amt_id . "'," 
+    $sql = "INSERT INTO $db_table (user_id, timestamp, pctime, scenario_id, coords, total_risk, distance, outcome) VALUES
+    ('" . $user_id . "'," 
     . "'" . $timestamp . "'," 
     . $pctime . ","
     . "'" . $scenario_id . "',"
