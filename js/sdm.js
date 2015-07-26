@@ -21,6 +21,7 @@ var START_END_POINTS_COLOR = "yellow";
 var START_END_POINTS_STROKE_COLOR = "#555";
 var START_END_POINTS_STROKE_WIDTH = "1px";
 
+var INVISIBLE = -1;
 var WITHOUT = 0;
 var EXPLICIT_COLOR = 1;
 var EXPLICIT_COLOR_M = 2;
@@ -412,7 +413,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		;
 		
 	// layer for the roads
-	if (visualization == WITHOUT) {
+	if (visualization == INVISIBLE) {
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
 			.enter()
@@ -421,7 +422,19 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			// .attr("id", function(d) {return "road" + d.properties.id;})
 			.style("stroke-width", ROUTE_STROKE_WIDTH)
 			.style("stroke-linecap", "round")
+			.style("opacity", 0)
 			.each(function(d) {d3.select(this).style('stroke', "grey");});
+			;
+	} else if (visualization == WITHOUT) {
+		roads = roadlayer.selectAll("path")
+		.data(roaddata)
+		.enter()
+		.append("path")
+		.attr("d", path)
+		// .attr("id", function(d) {return "road" + d.properties.id;})
+		.style("stroke-width", ROUTE_STROKE_WIDTH)
+		.style("stroke-linecap", "round")
+		.each(function(d) {d3.select(this).style('stroke', "grey");});
 	} else if (visualization == EXPLICIT_COLOR) {
 		roads = roadlayer.selectAll("path")
 			.data(roaddata)
@@ -808,6 +821,7 @@ d3.json(pointsABpath, function(error, pointdata) {
 	var abdata = topojson.feature(pointdata, pointdata.objects[pointsABname]).features;
 		
 	// points A, B
+
 	points = pointlayer.selectAll("circle")
 		.data(abdata)
 		.enter()
@@ -845,10 +859,12 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 		 .style("font-weight", "bold")
 		 .style("font-size", "40px")
+		 .style("opacity", function() {return visualization >= 0 ? 1 : 0;})
 		.text(function (d) {
-				return d.properties.id==0?"A":"B";
-			})
+			return d.properties.id==0?"A":"B";
+		})
 	;
+	
 	
 	// initial state: starting point is current end of route
 	currentEnd = new toxi.geom.Vec2D(pointAx, pointAy);
@@ -1049,6 +1065,8 @@ function submitRoute() {
 	} else {
 		alertString += TEXT_ROAD_NOT_BLOCKED;
 	}
+	numNotBlocked += 1-outcome;
+	console.log("number not blocked: " + numNotBlocked);
 //	alertString += decision + "\n";
 //	var routeline = d3.svg.line()
 //    .x(function(d,i) { return projection.invert([route[i].x, route[i].y])[0]; })

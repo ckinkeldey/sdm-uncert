@@ -94,16 +94,31 @@
                   document.questionnaire.prefer6.focus();
                   return false;
                 }
+                
             }
+
             </script>
 
             <body>
-
-        <form name="questionnaire" id="questionnaire" action="sendQuest.php" method="post" onsubmit="return chkFormular()" style="visibility: visible;">
+		
+        <form name="questionnaire" id="questionnaire" action="sendQuest.php" method="get" onsubmit="return chkFormular()" style="visibility: visible;">
             <p><br/><b>Please complete the following</b> ((*) denotes a required answer)</p>
             <p>&nbsp;</p>
             <input id="userid" type="hidden" name="userid" value=""/>
+            <input id="numnotblocked" type="hidden" name="numnotblocked" value=""/>
+            <script>
+            function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search);
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
             
+				var userid = $("#mainpage").attr("userid");
+	            document.getElementById("userid").value=userid;
+	            var numnotblocked = $("#mainpage").attr("numnotblocked");
+	            document.getElementById("numnotblocked").value=numnotblocked;
+            </script>
             <p>(*) Your Age: <input name="age" type="text" size="5" maxlength="2"> years</p>
             
             <p>(*) Sex: <input type="radio" name="sex" value="m"> M / <input type="radio" name="sex" value="f"> F</p>
@@ -166,7 +181,7 @@
             <p>&nbsp;</p>
             <input type="submit" value=" Submit ">
         </form>
-
+			
     </body>
 </html>
 

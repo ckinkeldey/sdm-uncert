@@ -13,26 +13,26 @@
             $db_table = 'questionnaire';
             
 
-            $inserts[] = "age=" . $_POST['age'];
-	    $inserts[] = "user_id=\"" . $_POST['userid']. "\"";
-            $inserts[] = "sex=\"" . $_POST['sex'] . "\"";
-	    $inserts[] = "topDegree=\"" . htmlspecialchars($_POST['topDegree']) ."\"";
-	    $inserts[] = "otherDegree=\"" . htmlspecialchars($_POST['otherDegree']) ."\"";
-            $inserts[] = "discipline=\"" . htmlspecialchars($_POST['discipline']) ."\"";
-            $inserts[] = "cartogisstudy=\"" . $_POST['cartogisstudy'] . "\"";
-            $inserts[] = "maths=\"" . htmlspecialchars($_POST['maths'])."\"";
-            $inserts[] = "language=\"" . $_POST['language'] . "\"";
-            $inserts[] = "firstlanguage=\"" . htmlspecialchars($_POST['firstlanguage'])."\"";
-	    $inserts[] = "colorblind=\"" . $_POST['colorblind'] . "\"";
-	    $inserts[] = "fvalidity=\"" . htmlspecialchars($_POST['fvalidity'])."\"";
-            $inserts[] = "comments=\"" . htmlspecialchars($_POST['comments'])."\"";
-            $inserts[] = "bushfireexp=\"" . htmlspecialchars($_POST['bushfireexp'])."\"";
-	    $inserts[] = "prefer1=" . $_POST['prefer1'];
-	    $inserts[] = "prefer2=" . $_POST['prefer2'];
-	    $inserts[] = "prefer3=" . $_POST['prefer3'];
-	    $inserts[] = "prefer4=" . $_POST['prefer4'];
-	    $inserts[] = "prefer5=" . $_POST['prefer5'];
-	    $inserts[] = "prefer6=" . $_POST['prefer6'];
+            $inserts[] = "age=" . $_GET['age'];
+	    $inserts[] = "user_id=\"" . $_GET['userid']. "\"";
+            $inserts[] = "sex=\"" . $_GET['sex'] . "\"";
+	    $inserts[] = "topDegree=\"" . htmlspecialchars($_GET['topDegree']) ."\"";
+	    $inserts[] = "otherDegree=\"" . htmlspecialchars($_GET['otherDegree']) ."\"";
+            $inserts[] = "discipline=\"" . htmlspecialchars($_GET['discipline']) ."\"";
+            $inserts[] = "cartogisstudy=\"" . $_GET['cartogisstudy'] . "\"";
+            $inserts[] = "maths=\"" . htmlspecialchars($_GET['maths'])."\"";
+            $inserts[] = "language=\"" . $_GET['language'] . "\"";
+            $inserts[] = "firstlanguage=\"" . htmlspecialchars($_GET['firstlanguage'])."\"";
+	    $inserts[] = "colorblind=\"" . $_GET['colorblind'] . "\"";
+	    $inserts[] = "fvalidity=\"" . htmlspecialchars($_GET['fvalidity'])."\"";
+            $inserts[] = "comments=\"" . htmlspecialchars($_GET['comments'])."\"";
+            $inserts[] = "bushfireexp=\"" . htmlspecialchars($_GET['bushfireexp'])."\"";
+	    $inserts[] = "prefer1=" . $_GET['prefer1'];
+	    $inserts[] = "prefer2=" . $_GET['prefer2'];
+	    $inserts[] = "prefer3=" . $_GET['prefer3'];
+	    $inserts[] = "prefer4=" . $_GET['prefer4'];
+	    $inserts[] = "prefer5=" . $_GET['prefer5'];
+	    $inserts[] = "prefer6=" . $_GET['prefer6'];
             
               
             $insert = "insert into $db_table set " . join(",", $inserts);
@@ -56,7 +56,14 @@
             
         </script>
   	
-	<div>Thank you for participating!</div>
+	<p>Thank you for participating!</p>
+	<?php 
+		echo "user id: " . $_GET['userid'] . "<br>";
+		echo "# not blocked: " . $_GET['numnotblocked'] . "<br>";
+		echo "Base payment = $7<br>";
+		$sum = 7+$_GET['numnotblocked']*0.2;
+		echo "+ " . $_GET['numnotblocked'] . " x 20 ct <br><br><b>= $" . number_format($sum,2) . "</b>";
+	?>
     </body>
 </html>
 

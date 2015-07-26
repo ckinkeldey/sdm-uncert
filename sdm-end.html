@@ -2,10 +2,37 @@
 <html>
 <head>
 <meta charset="utf-8">
-<!-- 		<meta http-equiv="refresh" content="0; url=explicit-color.html" /> -->
 <title>Spatial decision making study</title>
+<script>
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+</script>
 </head>
 <body>
-	<h3>Thank you!</h3>
+	<h3>Thank you for participating!</h3>
+	user id: <script>
+	 		var userid = getParameterByName("userid");
+			document.write(userid);
+			</script>
+	<br>
+	# not blocked: <script>
+	 		var numnotblocked = getParameterByName("numnotblocked");
+			document.write(numnotblocked);
+	</script>
+	<br>
+	Base payment = $7<br>
+	<script>
+	 		var numnotblocked = getParameterByName("numnotblocked");
+	 		var amount = 0.2 * numnotblocked;
+	 		var sum = 7 + amount;
+			document.write(numnotblocked);
+			document.write(" x 0.20 ct = $" + amount.toFixed(2) + "<br><br>");
+			document.write("<b>SUM: $" + sum.toFixed(2) + "</b><br>");
+	</script>
+			
 </body>
 </html>

@@ -44,13 +44,25 @@
 	<input id="deleteButton" type="button" value="Delete route"
 		onclick="deleteRoute();" /> 
 	<input id="submitButton" type="button"
-		value="Submit" onclick="parent.location='training2.html'" style="float: right;" />
+		value="Submit" onclick="submit();" style="float: right;" />
 	</div>
 <!-- 	<div id="textInfo" style="clear: both;"> -->
 <!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
 <!-- 		<p id="riskTextfield">Not blocked:</p> -->
 <!-- 	</div> -->
 	<script>
+		function submit() {
+			var alertString = "";
+			var probability = Math.round(100*probNotBlocked)/100;
+			var outcome = Math.random() > probNotBlocked ? 1:0;
+			if (outcome == 1) {
+				alertString += TEXT_ROAD_BLOCKED;
+			} else {
+				alertString += TEXT_ROAD_NOT_BLOCKED;
+			}
+			alert(alertString);
+			parent.location='training2.html';
+		}
 		var visualization = 1;
 		var backgroundPath = "./images/training.png";
 		var roadfile = "training";
