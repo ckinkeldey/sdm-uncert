@@ -2,7 +2,7 @@
     $db_host = 'localhost';
     
     $db_name = 'amsi_expsdm';
-    $db_user = 'root';
-    $db_pass = '';
+    $db_user = 'amsi_exp';
+    $db_pass = 'd24ddc1d';
     
 ?>

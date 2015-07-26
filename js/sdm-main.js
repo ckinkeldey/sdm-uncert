@@ -34,7 +34,7 @@ function next() {
 		$("#deleteButton").addClass("invisible");
 		$("#submitButton").addClass("invisible");
 		$("#textInfo").addClass("invisible");
-		$("#mainpage").load("questionnaire/questionnaire.html");
+		$("#mainpage").load("questionnaire.html");
 	}
 }
 
