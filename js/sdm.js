@@ -1071,9 +1071,9 @@ function submitRoute() {
             ('00' + date.getUTCMinutes()).slice(-2) + ':' +
             ('00' + date.getUTCSeconds()).slice(-2);    
 	    
-	var mydata = "amt_id=2"
+	var mydata = "user_id=" + ("user" + new Date()) 
 		+"&timestamp=" + date
-		+"&pctime=1111" + overalltime
+		+"&pctime=" + overalltime
 		+"&scenario_id=" + scenarioId
 		+"&coords=" + geoJSON
 		+"&total_risk=" + (1-probNotBlocked)
@@ -1082,25 +1082,25 @@ function submitRoute() {
 	
 	console.log(mydata);
 		
-//	jQuery.ajax({
-//    type: "GET",
-//    url: '../storeresult.php',
-//    dataType: 'text',
-//    data: mydata,
-//
-//    success: function (obj, textstatus) {
-//                  if( !('error' in obj) ) {
-//                      console.log(obj.result);
-//                  }
-//                  else {
-//                      console.log(obj.error);
-//                  }
-//           },
-//    error:function (xhr, ajaxOptions, thrownError){
-//                //On error, we alert user
-//    			console.log("Error when accessing the db: " + thrownError);
-//            }
-//	});
+	jQuery.ajax({
+    type: "GET",
+    url: '../storeresult.php',
+    dataType: 'text',
+    data: mydata,
+
+    success: function (obj, textstatus) {
+                  if( !('error' in obj) ) {
+                      console.log(obj.result);
+                  }
+                  else {
+                      console.log(obj.error);
+                  }
+           },
+    error:function (xhr, ajaxOptions, thrownError){
+                //On error, we alert user
+    			console.log("Error when accessing the db: " + thrownError);
+            }
+	});
 	
 	function getGeoJSON(route) {
 		var geojson = "{\n\"type\": \"FeatureCollection\",\n\"features\": [\n{\n\"type\": \"Feature\",\n\"properties\": {},\n"
