@@ -18,7 +18,7 @@ var i = 0;
 $("#deleteButton").addClass("invisible");
 $("#textInfo").addClass("invisible");
 $(function() {
-	$("#mainpage").load("sdm-start.html");
+	$("#mainpage").load(scenarios[i++]);
 });
 
 function next() {
@@ -34,7 +34,7 @@ function next() {
 		$("#deleteButton").addClass("invisible");
 		$("#submitButton").addClass("invisible");
 		$("#textInfo").addClass("invisible");
-		$("#mainpage").load("sdm-end.html");
+		$("#mainpage").load("questionnaire/questionnaire.html");
 	}
 }
 
