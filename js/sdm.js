@@ -1054,30 +1054,30 @@ function submitRoute() {
 	alert(alertString);
 	
 	var geoJSON = getGeoJSON(route);
-	console.log(geoJSON);
+//	console.log(geoJSON);
 	
 	var mydata = "amt_id=2&timestamp=4634&pctime="+overalltime+"&scenario_id=0" +
 	"&coords="+geoJSON+"&total_risk=0&distance="+routeLength+"&outcome=0";
 	
-//	jQuery.ajax({
-//    type: "GET",
-//    url: '../storeresult.php',
-//    dataType: 'text',
-//    data: mydata,
-//
-//    success: function (obj, textstatus) {
-//                  if( !('error' in obj) ) {
-//                      console.log(obj.result);
-//                  }
-//                  else {
-//                      console.log(obj.error);
-//                  }
-//           },
-//    error:function (xhr, ajaxOptions, thrownError){
-//                //On error, we alert user
-//                alert(thrownError);
-//            }
-//	});
+	jQuery.ajax({
+    type: "GET",
+    url: '../storeresult.php',
+    dataType: 'text',
+    data: mydata,
+
+    success: function (obj, textstatus) {
+                  if( !('error' in obj) ) {
+                      console.log(obj.result);
+                  }
+                  else {
+                      console.log(obj.error);
+                  }
+           },
+    error:function (xhr, ajaxOptions, thrownError){
+                //On error, we alert user
+                alert(thrownError);
+            }
+	});
 	
 	function getGeoJSON(route) {
 		var geojson = "{\n\"type\": \"FeatureCollection\",\n\"features\": [\n{\n\"type\": \"Feature\",\n\"properties\": {},\n"

@@ -13,8 +13,8 @@
     $distance=$_GET["distance"];
     $outcome=$_GET["outcome"];
     
-    // include db connection paramaters
-    include 'connect_db.php';
+    // include db connection parameters
+    include 'connect_db_server.php';
     $db_table = 'user_data';
     
     // connect to db
