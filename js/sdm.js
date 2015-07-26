@@ -1065,7 +1065,7 @@ function submitRoute() {
 	var mydata = "amt_id=2"
 		+"&timestamp=" + new Date().getTime()
 		+"&pctime=" + overalltime
-		+"&scenario_id=" + scenarioId; 
+		+"&scenario_id=" + scenarioId
 		+"&coords=" + geoJSON
 		+"&total_risk=" + (1-probNotBlocked)
 		+"&distance=" + routeLength
@@ -1089,7 +1089,7 @@ function submitRoute() {
            },
     error:function (xhr, ajaxOptions, thrownError){
                 //On error, we alert user
-                alert(thrownError);
+    			console.log("Error when accessing the db: " + thrownError);
             }
 	});
 	
