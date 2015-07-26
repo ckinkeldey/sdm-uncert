@@ -1,5 +1,8 @@
 <script language="php">
     
+    require_once('fb.php');
+    ob_start();
+    
     ini_set('display_errors', 1); 
 	error_reporting(E_ALL); 
 
@@ -14,7 +17,7 @@
     $outcome=$_GET["outcome"];
     
     // include db connection parameters
-    include 'connect_db_server.php';
+    include 'connect_db.php';
     $db_table = 'user_data';
     
     // connect to db
@@ -22,7 +25,7 @@
     if (!$con) {
         die('Could not connect: ' . mysql_error());
     }
-    echo "<p>$con</p>";
+    fb("<p>$con</p>");
     
     mysql_select_db($db_name, $con);
     
@@ -38,15 +41,15 @@
     . $outcome . 
     ")";
     
-    echo "<p>$sql</p>";
+    fb( "<p>$sql</p>");
     
     $result = mysql_query($sql);
     if (!$result) {
-     	echo '<p>Ungültige Anfrage: ' . mysql_error() . '</p>';
+     	fb( '<p>Invalid request: ' . mysql_error() . '</p>');
 	}
-    echo "<p>Result: $result</p>";
+    fb( "<p>Result: $result</p>");
          
     mysql_close($con);
-    echo "<p>connection closed.</p>"
+    fb( "<p>connection closed.</p>");
     
 </script>

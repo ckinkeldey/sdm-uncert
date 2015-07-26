@@ -1,0 +1,174 @@
+ <html>
+            <script type="text/javascript">
+            function chkFormular() {
+              // button = "ab";
+              //  pctime = +new Date();
+               // timeInfo();
+                
+                document.questionnaire.user.value = 1;
+                
+                if (document.questionnaire.age.value == "") {
+                  alert("Please enter your age!");
+                  document.questionnaire.age.focus();
+                  return false;
+                }
+                var chkZ = 1;
+                for (i = 0; i < document.questionnaire.age.value.length; ++i)
+                  if (document.questionnaire.age.value.charAt(i) < "0" ||
+                      document.questionnaire.age.value.charAt(i) > "9")
+                    chkZ = -1;
+                if (chkZ == -1) {
+                  alert("Please enter your age as number!");
+                  document.questionnaire.age.focus();
+                  return false;
+                }
+                if (document.questionnaire.sex[0].checked == false && document.questionnaire.sex[1].checked == false) {
+                  alert("Please select your sex!");
+                  return false;
+                }
+                if (document.questionnaire.topDegree.value == 0) {
+                    alert("Please answer all questions marked (*)!");
+                    return false;
+                }
+                if (document.questionnaire.discipline.value == "") {
+                  alert("Please answer all questions marked (*)!");
+                  document.questionnaire.discipline.focus();
+                  return false;
+                }
+                if (document.questionnaire.cartogisstudy[0].checked == false && document.questionnaire.cartogisstudy[1].checked == false) {
+                  alert("Please answer all questions marked (*)!");
+                  return false;
+                }
+                if (document.questionnaire.maths.value == "") {
+                  alert("Please answer all questions marked (*)!");
+                  document.questionnaire.maths.focus();
+                  return false;
+                }
+                if (document.questionnaire.language[0].checked == false && document.questionnaire.language[1].checked == false) {
+                  alert("Please answer if English is your first language!");
+                  return false;
+                }                
+                if (document.questionnaire.fvalidity.value == "") {
+                  alert("Please answer all questions marked (*)!");
+                  document.questionnaire.fvalidity.focus();
+                  return false;
+                }
+                if (document.questionnaire.bushfireexp.value == "") {
+                  alert("Please answer all questions marked (*)!");
+                  document.questionnaire.bushfireexp.focus();
+                  return false;
+                }
+                if (document.questionnaire.prefer1.value == "" || document.questionnaire.prefer1.value.length > 1 || document.questionnaire.prefer1.value.charAt(0) < "1" ||
+                      document.questionnaire.prefer1.value.charAt(0) > "6") {
+                  alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                  document.questionnaire.prefer1.focus();
+                  return false;
+                }
+                if (document.questionnaire.prefer2.value == "" || document.questionnaire.prefer2.value.length > 1 || document.questionnaire.prefer2.value.charAt(0) < "1" ||
+                      document.questionnaire.prefer2.value.charAt(0) > "6") {
+                  alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                  document.questionnaire.prefer2.focus();
+                  return false;
+                }
+                if (document.questionnaire.prefer3.value == "" || document.questionnaire.prefer3.value.length > 1 || document.questionnaire.prefer3.value.charAt(0) < "1" ||
+                      document.questionnaire.prefer3.value.charAt(0) > "6") {
+                  alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                  document.questionnaire.prefer3.focus();
+                  return false;
+                }
+                if (document.questionnaire.prefer4.value == "" || document.questionnaire.prefer4.value.length > 1 || document.questionnaire.prefer4.value.charAt(0) < "1" ||
+                      document.questionnaire.prefer4.value.charAt(0) > "6") {
+                  alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                  document.questionnaire.prefer4.focus();
+                  return false;
+                }
+                if (document.questionnaire.prefer5.value == "" || document.questionnaire.prefer5.value.length > 1 || document.questionnaire.prefer5.value.charAt(0) < "1" ||
+                      document.questionnaire.prefer5.value.charAt(0) > "6") {
+                  alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                  document.questionnaire.prefer5.focus();
+                  return false;
+                }
+                if (document.questionnaire.prefer6.value == "" || document.questionnaire.prefer6.value.length > 1 || document.questionnaire.prefer6.value.charAt(0) < "1" ||
+                      document.questionnaire.prefer6.value.charAt(0) > "6") {
+                  alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                  document.questionnaire.prefer6.focus();
+                  return false;
+                }
+            }
+            </script>
+
+            <body>
+
+        <form name="questionnaire" id="questionnaire" action="sendQuest.php" method="post" onsubmit="return chkFormular()" style="visibility: visible;">
+            <p><br/><b>Please complete the following</b> ((*) denotes a required answer)</p>
+            <p>&nbsp;</p>
+            <input type="hidden" name="user" value=""/>
+                
+            
+            <p>(*) Your Age: <input name="age" type="text" size="5" maxlength="2"> years</p>
+            
+            <p>(*) Sex: <input type="radio" name="sex" value="m"> M / <input type="radio" name="sex" value="f"> F</p>
+            
+            <p>(*) What is the highest degree you have completed, are currently completing (please include specific discipline)?<br/>
+            <select name="topDegree" size="1">
+                <option>Please select...</option>
+                <option>PhD</option>
+                <option>Masters</option>
+                <option>Graduate Certificate</option>
+                <option>Honours</option>
+                <option>Bachelor</option>
+                <option>Diploma</option>
+                <option>Certificate</option>
+                <option>Other</option>
+            </select>
+            <input name="otherDegree" type="text" size="80" maxlength="255" value="Selected other? Please specify here." onclick="document.questionnaire.otherDegree.value = ''"></p>
+            <p>(*) Discipline?
+            <input name="discipline" type="text" size="80" maxlength="255"></p>
+            <br/></p>
+                        
+            <p>(*) Have you formally studied Cartography or Geographic Information Systems?<br/>
+            <input type="radio" name="cartogisstudy" value="y"> Yes / <input type="radio" name="cartogisstudy" value="n"> No</p>
+            
+            <p>(*) You are told that an event has an 80% likelihood of occurring. Explain what you understand by this statement.<br/>
+            <textarea name="maths" cols="90" rows="5" wrap="soft"></textarea></p>
+            
+            <p>(*) Is English your first language? <input type="radio" name="language" value="y"> yes / <input type="radio" name="language" value="n"> no</p>
+            <p>If no, what is your first language?<br/>
+            <input name="firstlanguage" type="text" size="100" maxlength="255"></p>
+            
+            <p>(*)Do you have a known color vision deficiency?<br/>
+            <input type="radio" name="colorblind" value="y"> Yes / <input type="radio" name="colorblind" value="n"> No</p>
+            
+            <p>&nbsp;</p>
+            <p>(*) Please describe what you think we were measuring in this experiment.<br/>
+            <textarea name="fvalidity" cols="90" rows="5" wrap="soft"></textarea></p>
+            
+            <p>Please provide any general comments you might have about this experiment.<br/>
+            <textarea name="comments" cols="90" rows="5" wrap="soft"></textarea></p>
+            
+            <p>(*) Please detail any experience you might have with floods <br/>
+            (e.g. from the perspective of a victim or as part of emergency response - please be specific in your response).<br/>
+            <textarea name="bushfireexp" cols="90" rows="5" wrap="soft"></textarea></p>
+            
+            <p>(*) Which image type did you prefer?<br/>
+            Rank the following images from 1 to 6 (with 1 being most preferred to 6 being least preferred).</p>
+            <table>
+                <tr><td><img src="img/blue.png"/></td><td><input name="prefer1" type="text" size="10" maxlength="1"></td></tr>
+                <tr><td><img src="img/red.png"/></td><td><input name="prefer2" type="text" size="10" maxlength="1"></td></tr>
+                <tr><td><img src="img/circle.png"/></td><td><input name="prefer3" type="text" size="10" maxlength="1"></td></tr>
+                <tr><td><img src="img/warning.png"/></td><td><input name="prefer4" type="text" size="10" maxlength="1"></td></tr>
+                <tr><td><img src="img/texture.png"/></td><td><input name="prefer5" type="text" size="10" maxlength="1"></td></tr>
+                <tr><td><img src="img/sketchy.png"/></td><td><input name="prefer6" type="text" size="10" maxlength="1"></td></tr>
+                
+            </table>
+            
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <input type="submit" value=" Submit ">
+        </form>
+
+    </body>
+</html>
+
+
