@@ -87,6 +87,9 @@ var projection = d3.geo.mercator()
 .scale(scale)
 ;
 
+// DISABLE SUBMIT BUTTON
+d3.select("#submitButton").attr("disabled", "disabled");
+
 var path = d3.geo.path().projection(projection);
 
 var svg = d3.select("#map").append("svg").attr("width", width).attr("height", height);
@@ -425,6 +428,14 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 			.style("opacity", 0)
 			.each(function(d) {d3.select(this).style('stroke', "grey");});
 			;
+		roadlayer.append("image")
+		.attr("class", "noselect")
+		.attr("width", width + "px")
+		.attr("height", height + "px")
+		.attr("x", rasterX + "px")
+		.attr("y", rasterY + "px")
+		.attr("id", "map_top")
+		.attr("xlink:href", "images/training_texture_transparent.png");
 	} else if (visualization == WITHOUT) {
 		roads = roadlayer.selectAll("path")
 		.data(roaddata)

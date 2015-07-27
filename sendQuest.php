@@ -58,11 +58,11 @@
   	
 	<p>Thank you for participating!</p>
 	<?php 
-		echo "user id: " . $_GET['userid'] . "<br>";
-		echo "# not blocked: " . $_GET['numnotblocked'] . "<br>";
-		echo "Base payment = $7<br>";
+
+		echo  $_GET['numnotblocked'] . " of your routes were not blocked.<br>";
+		echo "You receive a base payment of $7 ";
 		$sum = 7+$_GET['numnotblocked']*0.2;
-		echo "+ " . $_GET['numnotblocked'] . " x 20 ct <br><br><b>= $" . number_format($sum,2) . "</b>";
+		echo "plus " . $_GET['numnotblocked'] . " x 20 ct,<br><br><b>$" . number_format($sum,2) . " in total.</b>";
 	?>
     </body>
 </html>

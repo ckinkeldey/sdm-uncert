@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   height="250"
+   width="200"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="legend_blue_circle.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1668"
+     inkscape:window-height="999"
+     id="namedview14"
+     showgrid="false"
+     inkscape:zoom="2"
+     inkscape:cx="61.75"
+     inkscape:cy="235.9375"
+     inkscape:window-x="306"
+     inkscape:window-y="67"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <text
+     x="79"
+     y="77"
+     id="text3776"
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.75px;line-height:125%;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none"
+     sodipodi:linespacing="125%"><tspan
+       x="79"
+       y="77"
+       id="tspan3778"
+       style="font-size:25px;line-height:50%">High</tspan></text>
+  <text
+     x="81"
+     y="243"
+     id="text3780"
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:50%;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none"
+     sodipodi:linespacing="50%"><tspan
+       x="81"
+       y="243"
+       id="tspan3782"
+       style="font-size:25px;line-height:50%">Low</tspan></text>
+  <rect
+     y="51.871361"
+     x="1.4813592"
+     height="195.23219"
+     width="67.223717"
+     id="rect4142"
+     style="fill:#bdb4b4;fill-opacity:1;stroke:#000000;stroke-width:0.5728876;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+  <circle
+     cy="83.290466"
+     cx="35"
+     id="path4784"
+     style="fill:#0570b0;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     r="8.0807381" />
+  <circle
+     cy="136.72414"
+     cx="35"
+     id="path4794"
+     style="fill:#0570b0;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     r="7.083004"
+     inkscape:transform-center-x="-3.5" />
+  <circle
+     cy="182.84956"
+     cx="34"
+     id="path4796"
+     style="fill:#0570b0;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     r="5.124032" />
+  <circle
+     cy="227.3779"
+     cx="34.5"
+     id="path4798"
+     style="fill:#0570b0;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     r="4.1493559" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="0.5"
+     y="22"
+     id="text4141"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4143"
+       x="0.5"
+       y="22"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25px;font-family:arial;-inkscape-font-specification:arial">Flood</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="1.5"
+     y="46.5"
+     id="text4145"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4147"
+       x="1.5"
+       y="46.5"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25px;font-family:Arial;-inkscape-font-specification:Arial">Likelihood</tspan></text>
+</svg>
