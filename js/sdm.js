@@ -88,7 +88,7 @@ var projection = d3.geo.mercator()
 ;
 
 // DISABLE SUBMIT BUTTON
-d3.select("#submitButton").attr("disabled", "disabled");
+//d3.select("#submitButton").attr("disabled", "disabled");
 
 var path = d3.geo.path().projection(projection);
 

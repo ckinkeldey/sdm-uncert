@@ -21,21 +21,13 @@
 		.invisible {
 			display: none;
 		}
-		.noselect {
-		    -webkit-touch-callout: none;
-		    -webkit-user-select: none;
-		    -khtml-user-select: none;
-		    -moz-user-select: none;
-		    -ms-user-select: none;
-		    user-select: none;
-		}
 	</style>
 </head>
 <body>
 	<h3>Please draw a route from A to B and press "Submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_blue_border.png" width="100px">
+		<img src="images/legend_sketchy.png" >
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -48,15 +40,17 @@
 		<p id="lengthTextfield">Route length: 0 m</p>
 		<p id="riskTextfield">Not blocked:</p>
 	</div>
-	
+		<script src="js/constants.js"></script>
 	<script>
-		var scenarioId = "color-2b";
-		var visualization = 1;
-		var backgroundPath = "./images/scenario2.png";
-		var roadfile = "scenario2b";
-		var roadnodesfile = "scenario2_points";
-		var pointsABname = "AB2b";
-
+		var scenarioId = "color-1a";
+		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_1A;
+		var risks = RISKS_1A;
+		var scenarioId = "texture-m-1a";
+		var visualization = 6;
+		var backgroundPath = "./images/scenario1.png";
+		var roadfile = "scenario1a";
+		var roadnodesfile = "scenario1_points";
+		var pointsABname = "AB1a";
 		var routes = false;
 		
 		var width = 800;

@@ -35,7 +35,7 @@
 	<h3>Please draw a route from A to B and press "Submit".</h3>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_texture.png" >
+		<img src="images/legend_red_border.png" width="100px">
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -44,20 +44,20 @@
 		value="Submit" onclick="next();" style="float: right;" />
 	</div>
 	
-<!-- 	<div id="textInfo" style="clear: both;"> -->
-<!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
-<!-- 		<p id="riskTextfield">Not blocked:</p> -->
-<!-- 	</div> -->
-	
+	<div id="textInfo" style="clear: both;">
+		<p id="lengthTextfield">Route length: 0 m</p>
+		<p id="riskTextfield">Not blocked:</p>
+	</div>
+	<script src="js/constants.js"></script>
 	<script>
-		var scenarioId = "texture-1f";
-		var visualization = 5;
+		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_1C;
+		var risks = RISKS_1C;
+		var scenarioId = "color-m-1c";
+		var visualization = 2;
 		var backgroundPath = "./images/scenario1.png";
-		var roadfile = "scenario1f";
+		var roadfile = "scenario1c";
 		var roadnodesfile = "scenario1_points";
-		var pointsABname = "AB1f";
-		var A_B_LABEL_POSITION = [ -20, -25, 25, -20 ];
-		var risks = [ 0, 0.2, 0.10, 0.08, 0.04 ];
+		var pointsABname = "AB1c";
 		var routes = false;
 		
 		var width = 800;

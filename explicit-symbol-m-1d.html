@@ -37,20 +37,20 @@
 		value="Submit" onclick="next();" style="float: right;" />
 	</div>
 	
-<!-- 	<div id="textInfo" style="clear: both;"> -->
-<!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
-<!-- 		<p id="riskTextfield">Not blocked:</p> -->
-<!-- 	</div> -->
-
+	<div id="textInfo" style="clear: both;">
+		<p id="lengthTextfield">Route length: 0 m</p>
+		<p id="riskTextfield">Not blocked:</p>
+	</div>
+	<script src="js/constants.js"></script>
 	<script>
+		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_1D;
+		var risks = RISKS_1D;
 		var scenarioId = "symbol-m-1d";
 		var visualization = 4;
 		var backgroundPath = "./images/scenario1.png";
 		var roadfile = "scenario1d";
 		var roadnodesfile = "scenario1_points";
 		var pointsABname = "AB1d";
-		var A_B_LABEL_POSITION = [ -30, 0, 35, 25 ];
-		var risks = [ 0, 0.2, 0.10, 0.08, 0.04 ];
 		var routes = false;
 		
 		var width = 800;

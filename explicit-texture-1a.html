@@ -21,14 +21,6 @@
 		.invisible {
 			display: none;
 		}
-		.noselect {
-		    -webkit-touch-callout: none;
-		    -webkit-user-select: none;
-		    -khtml-user-select: none;
-		    -moz-user-select: none;
-		    -ms-user-select: none;
-		    user-select: none;
-		}
 	</style>
 </head>
 <body>
@@ -44,20 +36,20 @@
 		value="Submit" onclick="next();" style="float: right;" />
 	</div>
 	
-<!-- 	<div id="textInfo" style="clear: both;"> -->
-<!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
-<!-- 		<p id="riskTextfield">Not blocked:</p> -->
-<!-- 	</div> -->
-	
+	<div id="textInfo" style="clear: both;">
+		<p id="lengthTextfield">Route length: 0 m</p>
+		<p id="riskTextfield">Not blocked:</p>
+	</div>
+		<script src="js/constants.js"></script>
 	<script>
-		var scenarioId = "texture-2e";
+		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_1A;
+		var risks = RISKS_1A;
+		var scenarioId = "texture-1a";
 		var visualization = 5;
-		var backgroundPath = "./images/scenario2.png";
-		var roadfile = "scenario2e";
-		var roadnodesfile = "scenario2_points";
-		var pointsABname = "AB2e";
-		var A_B_LABEL_POSITION = [ -15, 45, 10, 50 ];
-		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
+		var backgroundPath = "./images/scenario1.png";
+		var roadfile = "scenario1a";
+		var roadnodesfile = "scenario1_points";
+		var pointsABname = "AB1a";
 		var routes = false;
 		
 		var width = 800;
