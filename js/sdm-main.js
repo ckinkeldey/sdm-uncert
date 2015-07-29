@@ -1,16 +1,13 @@
-var scenarios = [ "explicit-color-1a.html", "explicit-color-m-1a.html",
-                  "explicit-color-1b.html", "explicit-color-m-1b.html",
-                  "explicit-color-2a.html", "explicit-color-m-2a.html",
-                  "explicit-color-2b.html", "explicit-color-m-2b.html",
-                  "explicit-symbol-1c.html", "explicit-symbol-m-1c.html",
-                  "explicit-symbol-1d.html", "explicit-symbol-m-1d.html",
-                  "explicit-symbol-2c.html", "explicit-symbol-m-2c.html",
-                  "explicit-symbol-2d.html", "explicit-symbol-m-2d.html",
-                  "explicit-texture-1e.html", "explicit-texture-m-1e.html", 
-                  "explicit-texture-1f.html", "explicit-texture-m-1f.html", 
-                  "explicit-texture-2e.html", "explicit-texture-m-2e.html",
-                  "explicit-texture-2f.html", "explicit-texture-m-2f.html"
+var scenarios = [ "explicit-color-1a.html", "explicit-color-m-1a.html", "explicit-symbol-1a.html", "explicit-symbol-m-1a.html", "explicit-texture-1a.html", "explicit-texture-m-1a.html",
+                  "explicit-color-1b.html", "explicit-color-m-1b.html", "explicit-symbol-1b.html", "explicit-symbol-m-1b.html", "explicit-texture-1b.html", "explicit-texture-m-1b.html",
+                  "explicit-color-1c.html", "explicit-color-m-1c.html", "explicit-symbol-1c.html", "explicit-symbol-m-1c.html", "explicit-texture-1c.html", "explicit-texture-m-1c.html",
+                  "explicit-color-1d.html", "explicit-color-m-1d.html", "explicit-symbol-1d.html", "explicit-symbol-m-1d.html", "explicit-texture-1d.html", "explicit-texture-m-1d.html",
+                  "explicit-color-2a.html", "explicit-color-m-2a.html", "explicit-symbol-2a.html", "explicit-symbol-m-2a.html", "explicit-texture-2a.html", "explicit-texture-m-2a.html",
+                  "explicit-color-2b.html", "explicit-color-m-2b.html", "explicit-symbol-2b.html", "explicit-symbol-m-2b.html", "explicit-texture-2b.html", "explicit-texture-m-2b.html",
+                  "explicit-color-2c.html", "explicit-color-m-2c.html", "explicit-symbol-2c.html", "explicit-symbol-m-2c.html", "explicit-texture-2c.html", "explicit-texture-m-2c.html",
+                  "explicit-color-2d.html", "explicit-color-m-2d.html", "explicit-symbol-2d.html", "explicit-symbol-m-2d.html", "explicit-texture-2d.html", "explicit-texture-m-2d.html"
                   ];
+
 if (random) {
 	shuffle(scenarios);
 }
