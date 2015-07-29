@@ -32,9 +32,10 @@
 		</style>
 </head>
 <body>
-	<h3>Training: Please draw a route from A to B and press "Submit".</h3>
-	<p>To draw a route on the map, click on the road segments to form a path from A to B. As you click on a segment of the road, it will be shown as yellow. To change your route at any time, press the “Delete route” button. This will erase your entire route and enable you to start again. To remove a selected segment of the route, click on the route a second time and you will see it will change from yellow to unselected.<br>
-	<br>This is training example 1 of 6. When you are finished click the “Submit” button at the bottom of this page.<br>
+	<h3>Please draw a route from A to B and press "Submit".</h3>
+	<p><b>Low risk</b> and a <b>short path</b> are <b>equally</b> important when drawing your route.<br>
+	<br>In the example below, the optimal route is shown in yellow.<br>
+	It does not travel through the high flood likelihood area because the low flood likelihood route is only slightly longer.
 	</p>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
@@ -52,8 +53,8 @@
 	</div>
 	<script src="js/constants.js"></script>
 	<script>
-		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_T1;
-		var risks = RISKS_T1;
+		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_T6;
+		var risks = RISKS_T6;
 		
 		function submit() {
 			var alertString = "";
@@ -66,9 +67,8 @@
 				alertString += TEXT_ROAD_NOT_BLOCKED;
 			}
 			alert(alertString);
-			parent.location='training4.html';
+			parent.location='sdm.html';
 		}
-		
 		var visualization = 1;
 		var backgroundPath = "./images/training.png";
 		var roadfile = "training";
@@ -88,6 +88,6 @@
 	<script src="lib/jquery.js"></script>
 	<script src="lib/toxiclibs.js"></script>
 	<script src="js/sdm.js"></script>
-
+	<script>startTime();</script>
 </body>
 </html>

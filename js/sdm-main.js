@@ -1,4 +1,5 @@
-var scenarios = [ "explicit-color-1a.html", "explicit-color-m-1a.html", "explicit-symbol-1a.html", "explicit-symbol-m-1a.html", "explicit-texture-1a.html", "explicit-texture-m-1a.html",
+var scenarios = [ 
+                  "explicit-color-1a.html", "explicit-color-m-1a.html", "explicit-symbol-1a.html", "explicit-symbol-m-1a.html", "explicit-texture-1a.html", "explicit-texture-m-1a.html",
                   "explicit-color-1b.html", "explicit-color-m-1b.html", "explicit-symbol-1b.html", "explicit-symbol-m-1b.html", "explicit-texture-1b.html", "explicit-texture-m-1b.html",
                   "explicit-color-1c.html", "explicit-color-m-1c.html", "explicit-symbol-1c.html", "explicit-symbol-m-1c.html", "explicit-texture-1c.html", "explicit-texture-m-1c.html",
                   "explicit-color-1d.html", "explicit-color-m-1d.html", "explicit-symbol-1d.html", "explicit-symbol-m-1d.html", "explicit-texture-1d.html", "explicit-texture-m-1d.html",

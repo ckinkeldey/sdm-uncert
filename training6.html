@@ -32,13 +32,13 @@
 		</style>
 </head>
 <body>
-	<h3>Please draw a route from A to B and press "Submit".</h3>
+	<h3>Training: Please draw a route from A to B and press "Submit".</h3>
 	<p>To draw a route on the map, click on the road segments to form a path from A to B. As you click on a segment of the road, it will be shown as yellow. To change your route at any time, press the “Delete route” button. This will erase your entire route and enable you to start again. To remove a selected segment of the route, click on the route a second time and you will see it will change from yellow to unselected.<br>
-	<br>This is the last training example. When you are finished click the “Submit” button at the bottom of this page. This will start the actual study.
+	<br>This is training example 4 of 6. When you are finished click the “Submit” button at the bottom of this page.<br>
 	</p>
 	<div id="map"></div>
 	<div id="legend" style="float: left; margin-left: 50px;">
-		<img src="images/legend_sketchy.png" >
+		<img src="images/legend_red_warning.png" >
 	</div>
 	<div id="buttons" style="clear: both;">
 	<input id="deleteButton" type="button" value="Delete route"
@@ -46,24 +46,29 @@
 	<input id="submitButton" type="button"
 		value="Submit" onclick="submit();" style="float: right;" />
 	</div>
-<!-- 	</div>d="textInfo" style="clear: both;"> -->
-<!-- 		<p id="lengthTextfield">Route length: 0 m</p> -->
-<!-- 		<p id="riskTextfield">Not blocked:</p> -->
-<!-- 	</div> -->
+	<div id="textInfo" style="clear: both;">
+		<p id="lengthTextfield">Route length: 0 m</p>
+		<p id="riskTextfield">Not blocked:</p>
+	</div>
+		<script src="js/constants.js"></script>
 	<script>
+		var A_B_LABEL_POSITION = A_B_LABEL_POSITION_T4;
+		var risks = RISKS_T4;
+		
 		function submit() {
 			var alertString = "";
 			var probability = Math.round(100*probNotBlocked)/100;
 			var outcome = Math.random() > probNotBlocked ? 1:0;
+			alertString += probability + " -> ";
 			if (outcome == 1) {
 				alertString += TEXT_ROAD_BLOCKED;
 			} else {
 				alertString += TEXT_ROAD_NOT_BLOCKED;
 			}
 			alert(alertString);
-			parent.location='sdm.html';
+			parent.location='training7.html';
 		}
-		var visualization = 6;
+		var visualization = 4;
 		var backgroundPath = "./images/training.png";
 		var roadfile = "training";
 		var roadnodesfile = "training_points";
@@ -71,6 +76,7 @@
 		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
 		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
+		var minLength = 1;
 		
 		var width = 400;
 		var height = 400;
