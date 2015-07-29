@@ -87,7 +87,10 @@ var projection = d3.geo.mercator()
 ;
 
 // DISABLE SUBMIT BUTTON
-//d3.select("#submitButton").attr("disabled", "disabled");
+d3.select("#submitButton").attr("disabled", "true");
+
+// HIDE NUMBERS
+d3.select("#textInfo").style("opacity", 0);
 
 var path = d3.geo.path().projection(projection);
 
@@ -636,7 +639,7 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 		var dy = last[1] - first[1];
 		var length = Math.sqrt(dx*dx+dy*dy);
 		var newCoords = [];
-		var numPoints = Math.round(5 * length / 0.609);
+		var numPoints = Math.ceil(5 * length / 0.609);
 		for (var k = 0; k < numPoints; k++) {
 			var newX = first[0] + k * dx/numPoints;
 			var newY = first[1] + k * dy/numPoints;
@@ -648,17 +651,17 @@ d3.json("data/"+ roadfile + ".topojson", function(error, roaddata) {
 	
 	function computeSketchyCoords(coords, risk) {
 		var sketchy = [];
-		if (coords[0][0] instanceof Array) {
-			var sketchyCoords = [];
-			for (var i = 0; i < coords.length; i++) {
-				var sketchy = computeSketchyCoords(coords[i], risk);
-				sketchyCoords.push(sketchy[0]);
-				if (i == coords.length-1) {
-					sketchyCoords.push(sketchy[1]);
-				}
-			}
-			return sketchyCoords;
-		}
+//		if (coords[0][0] instanceof Array) {
+//			var sketchyCoords = [];
+//			for (var i = 0; i < coords.length; i++) {
+//				var sketchy = computeSketchyCoords(coords[i], risk);
+//				sketchyCoords.push(sketchy[0]);
+//				if (i == coords.length-1) {
+//					sketchyCoords.push(sketchy[1]);
+//				}
+//			}
+//			return sketchyCoords;
+//		}
 		for (var i = 0; i < coords.length; i++) {
 			var projected = projection(coords[i]);
 			var jitter = risk/4 * ROUTE_STROKE_WIDTH;
@@ -869,7 +872,7 @@ d3.json(pointsABpath, function(error, pointdata) {
 		.style("stroke-width", START_END_POINTS_STROKE_WIDTH)
 		 .style("font-weight", "bold")
 		 .style("font-size", "40px")
-		 .style("opacity", function() {return visualization >= 0 ? 1 : 0;})
+		 .style("opacity", function() {return 1;})//visualization >= 0 ? 1 : 0;})
 		.text(function (d) {
 			return d.properties.id==0?"A":"B";
 		})

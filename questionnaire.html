@@ -6,9 +6,10 @@
               //  pctime = +new Date();
                // timeInfo();
                 
-                document.getElementById("userid").value = document.getElementById("mainpage").getAttribute("userid");
-                document.getElementById("numnotblocked").value = document.getElementById("mainpage").getAttribute("numnotblocked");
-                 
+               if(document.getElementById("mainpage")) {
+	                document.getElementById("userid").value = document.getElementById("mainpage").getAttribute("userid");
+	                document.getElementById("numnotblocked").value = document.getElementById("mainpage").getAttribute("numnotblocked");
+               }
                 if (document.questionnaire.age.value == "") {
                   alert("Please enter your age!");
                   document.questionnaire.age.focus();
@@ -96,7 +97,31 @@
                   document.questionnaire.prefer6.focus();
                   return false;
                 }
+                if (!checkRanking()) {
+                	 alert("Please rank the image types according to your preferences with numbers between 1 (most prefered) and 6 (least prefered)!");
+                     document.questionnaire.prefer1.focus();
+                     return false;
+                }
                 return true;
+            }
+            
+            function checkRanking() {
+            	var ranking = [];
+            	ranking.push(document.questionnaire.prefer1.value.charAt(0));
+            	ranking.push(document.questionnaire.prefer2.value.charAt(0));
+            	ranking.push(document.questionnaire.prefer3.value.charAt(0));
+            	ranking.push(document.questionnaire.prefer4.value.charAt(0));
+            	ranking.push(document.questionnaire.prefer5.value.charAt(0));
+            	ranking.push(document.questionnaire.prefer6.value.charAt(0));
+            	
+            	return ranking.indexOf('1') > -1
+            	&& ranking.indexOf('2') > -1
+            	&& ranking.indexOf('3') > -1
+            	&& ranking.indexOf('4') > -1
+            	&& ranking.indexOf('5') > -1
+            	&& ranking.indexOf('6') > -1
+            	;
+            	
             }
 	</script>
 </head>
