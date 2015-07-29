@@ -51,7 +51,6 @@
 			var alertString = "";
 			var probability = Math.round(100*probNotBlocked)/100;
 			var outcome = Math.random() > probNotBlocked ? 1:0;
-			alertString += probability + " -> ";
 			if (outcome == 1) {
 				alertString += TEXT_ROAD_BLOCKED;
 			} else {
@@ -63,11 +62,9 @@
 		var scenarioId = "t5";
 		var visualization = -1;
 		var backgroundPath = "./images/training_black.png";
-		var roadfile = "training";
+		var roadfile = "training2";
 		var roadnodesfile = "training_points";
 		var pointsABname = "AB";
-		var A_B_LABEL_POSITION = [ -30, 0, 25, 35 ];
-		var risks = [ 0, 0.2, 0.10, 0.04, 0.025 ];
 		var routes = false;
 		var minLength = 1;
 		

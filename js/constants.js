@@ -11,7 +11,7 @@
 		var A_B_LABEL_POSITION_T1 = [ -30, 0, 25, 35 ];
 		var A_B_LABEL_POSITION_T2 = [ -30, 0, 25, 35 ];
 		var A_B_LABEL_POSITION_T3 = [ -30, 0, 25, 35 ];
-		var A_B_LABEL_POSITION_T4 = [ -30, 0, 25, 35 ];
+		var A_B_LABEL_POSITION_T4 = [ -20, -20, 20, 50 ];
 		var A_B_LABEL_POSITION_T5 = [ -30, 0, 25, 35 ];
 		var A_B_LABEL_POSITION_T6 = [ -30, 0, 25, 35 ];
 		

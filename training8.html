@@ -46,7 +46,7 @@
 	<input id="submitButton" type="button"
 		value="Submit" onclick="submit();" style="float: right;" />
 	</div>
-	</div>d="textInfo" style="clear: both;">
+	<div id="textInfo" style="clear: both;">
 		<p id="lengthTextfield">Route length: 0 m</p>
 		<p id="riskTextfield">Not blocked:</p>
 	</div>
@@ -59,7 +59,7 @@
 			var alertString = "";
 			var probability = Math.round(100*probNotBlocked)/100;
 			var outcome = Math.random() > probNotBlocked ? 1:0;
-			alertString += probability + " -> ";
+// 			alertString += probability + " -> ";
 			if (outcome == 1) {
 				alertString += TEXT_ROAD_BLOCKED;
 			} else {
@@ -70,9 +70,9 @@
 		}
 		var visualization = 6;
 		var backgroundPath = "./images/training.png";
-		var roadfile = "training";
+		var roadfile = "training2";
 		var roadnodesfile = "training_points";
-		var pointsABname = "AB";
+		var pointsABname = "AB_6";
 		var routes = false;
 		var minLength = 1;
 		
