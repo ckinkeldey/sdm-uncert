@@ -6,11 +6,19 @@ Laboratory experiment with 60 student participants
 Joint work with Lisa Cheong, Matt Duckham (University of Melbourne, Australia)  
 Publication currently under production  
 
+![Screenshot of user interface](/images/screenshot1.png)
+*Sample map and road drawing interface used in the study*
+
 This study was concerned with the influence of visualization on spatial decision making
 (wayfinding). The participants of the study were confronted with a flooding scenario (“A
 flooding event occurred in the area shown on the map. There is the risk that roads may be
 blocked due to the flooding”) with different maps depicting flood likelihood with different
-visualization techniques. The task was to select a route through the network with minimum
+visualization techniques. 
+
+![Risk visualization techniques](/images/visualizations.png "Titel")
+*Visualizations used in the study to represent risk of road blockage*
+
+The task was to select a route through the network with minimum
 risk and length at the same time. After each selected route the user received feedback if the
 road was blocked, based on the overall flood likelihood of the selected route. We measured success (number of routes not blocked) and the time needed, and additionally saved the
 selected routes in the database. The analysis is still ongoing but preliminary results show
